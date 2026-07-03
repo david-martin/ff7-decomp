@@ -163,11 +163,25 @@ static void func_800DD690(s32 arg0, s16 arg1) {
     }
 }
 
+void func_800DD85C(s32, s16);
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DD85C);
 
+void func_800DDAD8(s32, s16);
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DDAD8);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DDC34);
+/* Run the three sub-handlers on the current 0x14-byte slot (at sub-offsets 0,
+ * 8, and 0x10 within the slot), then advance to the next slot. */
+static void func_800DDC34(s32 arg0, s16 arg1) {
+    s32 off2;
+    s32 off3;
+
+    func_800DD85C(arg0 + (D_800F5628 * 0x14), arg1);
+    off2 = (D_800F5628 * 0x14) + 8;
+    func_800DDAD8(arg0 + off2, arg1);
+    off3 = (D_800F5628 * 0x14) + 0x10;
+    func_800DD690(arg0 + off3, arg1);
+    D_800F5628++;
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DDCE8);
 

@@ -1300,7 +1300,6 @@ func_800DCF94 = 0x800dcf94;
 func_800DCFD4 = 0x800dcfd4;
 func_800DD85C = 0x800dd85c;
 func_800DDAD8 = 0x800ddad8;
-func_800DDC34 = 0x800ddc34;
 func_800DDCE8 = 0x800ddce8;
 func_800DDE90 = 0x800dde90;
 func_800DDFEC = 0x800ddfec;
