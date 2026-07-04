@@ -1,5 +1,15 @@
 #include "common.h"
 
+#include <libetc.h>
+#include <libgpu.h>
+#include <libgte.h>
+
+extern s32 D_800A6528;
+extern s32 D_800AF410;
+
+void func_80033B70();
+void func_80036298();
+
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A0030);
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A04C4);
@@ -32,9 +42,9 @@ INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A19A4);
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A1E20);
 
-INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A1ED4);
+static void func_800A1ED4(s32 arg0) { D_800A6528 = arg0; }
 
-INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A1EE4);
+s32 func_800A1EE4(void) { return 0; }
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A1EEC);
 
@@ -62,7 +72,10 @@ INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A2274);
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A22A4);
 
-INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A22D4);
+s32 func_800A22D4(void) {
+    D_800AF410 = 0;
+    return 1;
+}
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A22E4);
 
@@ -74,7 +87,15 @@ INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A23F8);
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A2420);
 
-INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A2458);
+static void func_800A2458(void) {
+    StopCallback();
+    ResetCallback();
+    ResetGraph(0);
+    PadInit(0);
+    InitGeom();
+    func_80036298();
+    func_80033B70();
+}
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A24A8);
 
@@ -104,13 +125,19 @@ INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A3178);
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A3210);
 
-INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A32D8);
+static void func_800A32D8(void* arg0) {
+    u32 v1, v0;
+    v1 = *(u32*)arg0;
+    v0 = *((u32*)arg0 + 1);
+    *(u32*)((u8*)v1 + 4) = v0;
+    *(u32*)v0 = v1;
+}
 
-INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A32F0);
+static void func_800A32F0(void* arg0) { *((u8*)arg0 + 0xE) = 8; }
 
-INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A32FC);
+static void func_800A32FC(void* arg0) { *((u8*)arg0 + 0xE) = 4; }
 
-INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A3308);
+static void func_800A3308(void* arg0) { *((u8*)arg0 + 0xE) = 0x10; }
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A3314);
 
