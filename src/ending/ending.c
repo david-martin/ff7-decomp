@@ -87,6 +87,7 @@ INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A23F8);
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A2420);
 
+/* resets callbacks, graphics, pad, and geometry state */
 static void func_800A2458(void) {
     StopCallback();
     ResetCallback();
@@ -125,6 +126,7 @@ INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A3178);
 
 INCLUDE_ASM("asm/us/ending/nonmatchings/ending", func_800A3210);
 
+/* splices a node out of a doubly-linked list */
 static void func_800A32D8(void* arg0) {
     u32 v1, v0;
     v1 = *(u32*)arg0;
