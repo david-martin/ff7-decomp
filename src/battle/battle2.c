@@ -1043,18 +1043,12 @@ void func_800D3F8C(void) {
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D415C);
 
-void func_800D41FC(void* arg0, void* arg1, void* arg2) {
-    void* temp_a1;
-
-    *(s32*)((s32)arg2 + 0x14) =
-        (s32)(*(s32*)((s32)arg1 + 0x14) - *(s32*)((s32)arg0 + 0x14));
-    *(s32*)((s32)arg2 + 0x18) =
-        (s32)(*(s32*)((s32)arg1 + 0x18) - *(s32*)((s32)arg0 + 0x18));
-    *(s32*)((s32)arg2 + 0x1C) =
-        (s32)(*(s32*)((s32)arg1 + 0x1C) - *(s32*)((s32)arg0 + 0x1C));
+static void func_800D41FC(MATRIX* arg0, MATRIX* arg1, MATRIX* arg2) {
+    arg2->t[0] = arg1->t[0] - arg0->t[0];
+    arg2->t[1] = arg1->t[1] - arg0->t[1];
+    arg2->t[2] = arg1->t[2] - arg0->t[2];
     TransposeMatrix(arg0, arg2);
-    temp_a1 = (void*)((s32)arg2 + 0x14);
-    ApplyMatrixLV(arg2, temp_a1, temp_a1);
+    ApplyMatrixLV(arg2, arg2->t, arg2->t);
     MulMatrix(arg2, arg1);
 }
 
@@ -1131,12 +1125,9 @@ s32 func_800D54BC(s32 arg0) {
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D54EC);
 
-s32 func_800D55A4(s32 arg0) {
-    s32 temp_v0;
-
-    temp_v0 = arg0 * 0xB9C;
-    return (s32)((*(s16*)(D_801518E4 + 0x12 + temp_v0) * 0x10) *
-                 *(s16*)(D_801518E4 + 0x6 + temp_v0)) >>
+static s32 func_800D55A4(s32 arg0) {
+    return (s32)((D_801518E4[arg0].unk12 * 0x10) *
+                 D_801518E4[arg0].D_801518EA) >>
            0xC;
 }
 
@@ -1168,10 +1159,8 @@ s32 func_800D574C(s32 arg0) {
 }
 
 void func_800D5774(unsigned int arg0) {
-    s32 cond;
     s16* ptr;
-    cond = (((s16)D_800F836C) >> arg0) & 1;
-    if (cond) {
+    if ((((s16)D_800F836C) >> arg0) & 1) {
         ptr = (s16*)func_800D4FA8(6);
     } else {
         ptr = (s16*)func_800D4FA8(4);
