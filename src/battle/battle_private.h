@@ -276,6 +276,7 @@ extern Unk800AF470 D_800F5BB8[];
 extern s8 D_800F7DE4;
 extern u8 D_800F7DF4;
 extern s32 D_800F8368;
+extern u16 D_800F836C;
 extern s16 D_800F8370;
 extern s32* D_800F839C; // CD offset?
 extern u8 D_800F83A6;

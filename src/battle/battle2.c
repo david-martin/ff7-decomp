@@ -935,7 +935,15 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D3474);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D34C8);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D3520);
+void func_800D3520(s32* arg0, s32 arg1) {
+    void* temp_a0;
+    s32 t;
+    temp_a0 = (char*)arg0 + 4;
+    temp_a0 = (char*)temp_a0 + *arg0;
+    t = temp_a0 && temp_a0;
+    t = *(s16*)((char*)temp_a0 + 2);
+    *(volatile s16*)((char*)temp_a0 + 2) = arg1 + t;
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D3548);
 
@@ -1035,7 +1043,20 @@ void func_800D3F8C(void) {
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D415C);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D41FC);
+void func_800D41FC(void* arg0, void* arg1, void* arg2) {
+    void* temp_a1;
+
+    *(s32*)((s32)arg2 + 0x14) =
+        (s32)(*(s32*)((s32)arg1 + 0x14) - *(s32*)((s32)arg0 + 0x14));
+    *(s32*)((s32)arg2 + 0x18) =
+        (s32)(*(s32*)((s32)arg1 + 0x18) - *(s32*)((s32)arg0 + 0x18));
+    *(s32*)((s32)arg2 + 0x1C) =
+        (s32)(*(s32*)((s32)arg1 + 0x1C) - *(s32*)((s32)arg0 + 0x1C));
+    TransposeMatrix(arg0, arg2);
+    temp_a1 = (void*)((s32)arg2 + 0x14);
+    ApplyMatrixLV(arg2, temp_a1, temp_a1);
+    MulMatrix(arg2, arg1);
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D4284);
 
@@ -1110,7 +1131,14 @@ s32 func_800D54BC(s32 arg0) {
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D54EC);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D55A4);
+s32 func_800D55A4(s32 arg0) {
+    s32 temp_v0;
+
+    temp_v0 = arg0 * 0xB9C;
+    return (s32)((*(s16*)(D_801518E4 + 0x12 + temp_v0) * 0x10) *
+                 *(s16*)(D_801518E4 + 0x6 + temp_v0)) >>
+           0xC;
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D55F4);
 
@@ -1139,7 +1167,17 @@ s32 func_800D574C(s32 arg0) {
     return func_800D56A8(&sp10);
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D5774);
+void func_800D5774(unsigned int arg0) {
+    s32 cond;
+    s16* ptr;
+    cond = (((s16)D_800F836C) >> arg0) & 1;
+    if (cond) {
+        ptr = (s16*)func_800D4FA8(6);
+    } else {
+        ptr = (s16*)func_800D4FA8(4);
+    }
+    *ptr = arg0;
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D57C0);
 
