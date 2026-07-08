@@ -20,7 +20,24 @@ void func_800D8A70(void) {}
 
 void func_800D8A78(s8 arg0) { D_800F19A4 = arg0; }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800D8A88);
+void func_800D8A88(void) {
+    register s32 v1 asm("v1");
+    register s32 a0 asm("a0");
+    s32 base;
+
+    DrawSync(0);
+    VSync(D_800F19A4);
+    v1 = D_801517C0;
+    base = (s32)D_800FAFF4;
+    a0 = base;
+    if (v1 == a0) {
+        a0 = a0 + 0x40F4;
+    }
+    D_801517C0 = a0;
+    v1 = D_800F8368;
+    v1 ^= 1;
+    D_800F8368 = v1;
+}
 
 static void func_800D8AF0(u16 arg0) {
     D_8009A000[0] = arg0;
@@ -72,7 +89,19 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DBC18);
 
 static void func_800DBEA4(s32 arg0, s16 arg1) { func_800DBC18(arg0, arg1); }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DBEC8);
+void func_800DBEC8(void) {
+    s32 unused;
+    short new_var;
+    if (D_800F3896 == 0) {
+        func_800DBEA4(unused, D_800F38A9);
+        return;
+    }
+    new_var = D_800F3120;
+    if (((new_var != 0) && (((u32)D_800FAFEC) < 0x128U)) &&
+        (((u32)(D_800FAFF0 - 0x10)) < 0x96U)) {
+        func_800DB818(unused, D_800FAFEC, D_800FAFF0);
+    }
+}
 
 static void func_800DBF54(void) { func_800269C0(D_80077F64); }
 

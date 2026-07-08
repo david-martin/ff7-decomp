@@ -323,6 +323,7 @@ extern u16 D_801516F8;
 extern s16 D_801516FC[][4]; // most likely a struct
 extern s16 D_80151774;
 extern u8 D_801517BC;
+extern s32 D_801517C0;
 extern s16 D_80158D00;
 extern s32 D_80158D08;
 extern u_long D_80158D0C[];
