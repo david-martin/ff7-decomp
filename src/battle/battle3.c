@@ -20,16 +20,19 @@ void func_800D8A70(void) {}
 
 void func_800D8A78(s8 arg0) { D_800F19A4 = arg0; }
 
+// Waits for the GPU to finish drawing and for the next vblank, then swaps the
+// primitive/OT buffer pointer D_801517C0 between the two halves of D_800FAFF4
+// (a double buffer, 0x40F4 bytes each) and flips a parity flag (D_800F8368).
+// Looks like the per-frame "wait, then swap buffers" call in the battle draw
+// loop.
 void func_800D8A88(void) {
     register s32 v1 asm("v1");
     register s32 a0 asm("a0");
-    s32 base;
 
     DrawSync(0);
     VSync(D_800F19A4);
     v1 = D_801517C0;
-    base = (s32)D_800FAFF4;
-    a0 = base;
+    a0 = (s32)&D_800FAFF4;
     if (v1 == a0) {
         a0 = a0 + 0x40F4;
     }
@@ -89,15 +92,21 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle3", func_800DBC18);
 
 static void func_800DBEA4(s32 arg0, s16 arg1) { func_800DBC18(arg0, arg1); }
 
+// If D_800F3896 (a multi-value state, see the switch in battle.c) is 0,
+// dispatches through func_800DBEA4 with D_800F38A9 as the second argument
+// (D_800F38A9 is used elsewhere as a bit index, so this may be a slot/bit
+// selector rather than a literal value). Otherwise, if D_800F3120 is set and
+// the D_800FAFEC/D_800FAFF0 pair is within screen bounds (x in [0,0x128), y in
+// [0x10,0xA6)), dispatches through func_800DB818 with that pair instead.
+// func_800D9F80 resets D_800FAFEC/D_800FAFF0 to -0x100 (off-screen), so this
+// reads as a screen-space cursor/target validity check before drawing there.
 void func_800DBEC8(void) {
     s32 unused;
-    short new_var;
     if (D_800F3896 == 0) {
         func_800DBEA4(unused, D_800F38A9);
         return;
     }
-    new_var = D_800F3120;
-    if (((new_var != 0) && (((u32)D_800FAFEC) < 0x128U)) &&
+    if (((D_800F3120 != 0) && (((u32)D_800FAFEC) < 0x128U)) &&
         (((u32)(D_800FAFF0 - 0x10)) < 0x96U)) {
         func_800DB818(unused, D_800FAFEC, D_800FAFF0);
     }
