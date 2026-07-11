@@ -1885,7 +1885,6 @@ func_801D0DCC = 0x801d0dcc;
 func_801D0E4C = 0x801d0e4c;
 func_801D0E80 = 0x801d0e80;
 func_801D296C = 0x801d296c;
-func_801D3260 = 0x801d3260;
 g_MateriaPriority = 0x801d3834;
 g_MateriaStealLoot = 0x801d3f60;
 RestoreCharacterMateria = 0x801d3138;

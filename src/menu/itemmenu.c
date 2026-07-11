@@ -835,5 +835,3 @@ void RestoreCharacterMateria(s32 charIdx) {
 void func_801D3228(void) {
     func_80025D14((u_long*)D_801D3890, 0x3F0, 0x120, 0x110, 0x1E0);
 }
-
-INCLUDE_ASM("asm/us/menu/nonmatchings/itemmenu", func_801D3260);
