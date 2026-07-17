@@ -282,7 +282,7 @@ void func_800A4350(u8 actorId, u8 cmdIndex, s16 attackIndex, u16 targetMask) {
     }
 
     entry = &D_800F3958[D_800F39DC];
-    entry->priority = (cmdIndex == CMD_LIMIT_CATASTROPHE) ? 5 : 6;
+    entry->priority = (cmdIndex == CMD_LIMIT) ? 5 : 6;
     entry->actorId = actorId;
     entry->cmdIndex = cmdIndex;
     entry->attackIndex = attackIndex;
