@@ -274,7 +274,7 @@ void func_800A3E98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800A3ED0);
 
-void func_800A4350(u8 arg0, u8 arg1, s16 arg2, u16 arg3) {
+void func_800A4350(u8 actorId, u8 cmdIndex, s16 attackIndex, u16 targetMask) {
     QueuedAction* entry;
 
     if (D_800F39D8 == ((D_800F39DC + 1) & 0xF)) {
@@ -282,19 +282,21 @@ void func_800A4350(u8 arg0, u8 arg1, s16 arg2, u16 arg3) {
     }
 
     entry = &D_800F3958[D_800F39DC];
-    entry->priority = (arg1 == 0x14) ? 5 : 6;
-    entry->actorId = arg0;
-    entry->cmdIndex = arg1;
-    entry->attackIndex = arg2;
-    entry->targetMask = arg3;
+    entry->priority = (cmdIndex == CMD_LIMIT) ? 5 : 6;
+    entry->actorId = actorId;
+    entry->cmdIndex = cmdIndex;
+    entry->attackIndex = attackIndex;
+    entry->targetMask = targetMask;
 
-    if (arg1 == 8 || arg1 == 4 || arg1 == 0x17) {
-        func_800A5660(arg0, arg2);
+    // CMD_THROW/CMD_ITEM confirmed; 0x17 is still an unconfirmed command (past
+    // CMD_LIMIT, not one of the values captured live so far).
+    if (cmdIndex == CMD_THROW || cmdIndex == CMD_ITEM || cmdIndex == 0x17) {
+        func_800A5660(actorId, attackIndex);
     }
 
-    func_800A4D88(func_800A44D8(arg0));
-    D_800F5F44.D_800F7DAC &= ~(1 << arg0);
-    D_800F5F44.D_800F7DC2 |= 1 << arg0;
+    func_800A4D88(func_800A44D8(actorId));
+    D_800F5F44.D_800F7DAC &= ~(1 << actorId);
+    D_800F5F44.D_800F7DC2 |= 1 << actorId;
     D_800F39DC = (D_800F39DC + 1) & 0xF;
 }
 

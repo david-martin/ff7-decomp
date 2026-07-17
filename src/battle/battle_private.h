@@ -190,6 +190,28 @@ typedef struct {
     /* 0x70 */ s32 D_80151270;
 } Unk80151200; // size:0x74
 
+// Confirmed live via PCSX-Redux (exec breakpoint on func_800A4350, one command
+// at a time): 0x0E-0x11 still unconfirmed (likely W-Magic/W-Summon/W-Item).
+typedef enum {
+    CMD_ATTACK = 0x01,
+    CMD_MAGIC = 0x02,
+    CMD_SUMMON = 0x03,
+    CMD_ITEM = 0x04,
+    CMD_STEAL = 0x05,
+    CMD_SENSE = 0x06,
+    CMD_COIN = 0x07,
+    CMD_THROW = 0x08,
+    CMD_MORPH = 0x09,
+    CMD_DEATHBLOW = 0x0A,
+    CMD_MANIPULATE = 0x0B,
+    CMD_MIME = 0x0C,
+    CMD_ENEMY_SKILL = 0x0D,
+    CMD_CHANGE = 0x12,
+    CMD_DEFEND = 0x13,
+    CMD_LIMIT = 0x14,
+    CMD_NONE = 0xFF, // enemy attack / not a player-menu command
+} BattleCommand;
+
 // Queued-action entry, matches
 // https://wiki.ffrtt.ru/index.php/FF7/Battle/Battle_Mechanics action-queue
 // layout exactly (priority/queue-pos/actorId/cmdIndex/attackIndex/targetMask).
@@ -203,8 +225,11 @@ typedef struct {
     /* 0x1 */ u8
         queuePos; // position within priority band; not set by func_800A4350
     /* 0x2 */ u8 actorId;
-    /* 0x3 */ s8 cmdIndex; // e.g. CMD_MAGIC=0x02
-    /* 0x4 */ s16 attackIndex;
+    /* 0x3 */ s8 cmdIndex; // BattleCommand, stored raw (not the enum type --
+                           // keeps this struct's confirmed 0x8-byte layout)
+    /* 0x4 */ s16 attackIndex; // command-dependent: spell id for CMD_MAGIC,
+                               // damage dealt for CMD_COIN, skill id for
+                               // CMD_ENEMY_SKILL, etc -- not a uniform lookup
     /* 0x6 */ u16 targetMask;
 } QueuedAction; // size:0x8
 
