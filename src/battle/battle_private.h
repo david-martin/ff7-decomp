@@ -190,6 +190,24 @@ typedef struct {
     /* 0x70 */ s32 D_80151270;
 } Unk80151200; // size:0x74
 
+// Queued-action entry, matches
+// https://wiki.ffrtt.ru/index.php/FF7/Battle/Battle_Mechanics action-queue
+// layout exactly (priority/queue-pos/actorId/cmdIndex/attackIndex/targetMask).
+// D_800F3958 is a 16-entry ring buffer of these (D_800F39D8 read idx,
+// D_800F39DC write idx); the wiki describes up to 64 queued actions, so this
+// may be a smaller staging ring rather than the full logical queue --
+// unconfirmed.
+typedef struct {
+    /* 0x0 */ u8
+        priority; // 0=limits/counters, 6=player spells (see func_800A4350)
+    /* 0x1 */ u8
+        queuePos; // position within priority band; not set by func_800A4350
+    /* 0x2 */ u8 actorId;
+    /* 0x3 */ s8 cmdIndex; // e.g. CMD_MAGIC=0x02
+    /* 0x4 */ s16 attackIndex;
+    /* 0x6 */ u16 targetMask;
+} QueuedAction; // size:0x8
+
 typedef struct {
     s32 unk0;
     s32 unk4;
@@ -201,6 +219,12 @@ typedef struct {
     /* 0x04 */ u8 unk4[0x64];
 } Unk800F83E4; // size:0x68
 
+extern u8 D_800708C8[]; // kernel-region table, 0x1C-byte rows, indexed by
+                        // attack/effect id
+extern u8 D_800708D0[]; // kernel-region table, 0x1C-byte rows, indexed by
+                        // attack/effect id
+extern u8 D_8009D954[]; // per-actor sub-table, 0x440 stride, 8-byte rows keyed
+                        // by effect id
 extern s32 D_800E7A38;
 extern u8 D_800E7A48[0x10];
 extern s8 D_800E7A58[];
@@ -256,6 +280,9 @@ extern s32 D_800F3944;
 extern s32 D_800F3948;
 extern s32 D_800F3950;
 extern s32 D_800F3954;
+extern QueuedAction D_800F3958[16];
+extern s32 D_800F39D8; // read index into D_800F3958
+extern s32 D_800F39DC; // write index into D_800F3958
 extern s32 D_800F39E0;
 extern s32 D_800F39E4;
 extern s32 D_800F39EC;

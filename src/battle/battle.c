@@ -274,7 +274,29 @@ void func_800A3E98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800A3ED0);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800A4350);
+void func_800A4350(u8 arg0, u8 arg1, s16 arg2, u16 arg3) {
+    QueuedAction* entry;
+
+    if (D_800F39D8 == ((D_800F39DC + 1) & 0xF)) {
+        return;
+    }
+
+    entry = &D_800F3958[D_800F39DC];
+    entry->priority = (arg1 == 0x14) ? 5 : 6;
+    entry->actorId = arg0;
+    entry->cmdIndex = arg1;
+    entry->attackIndex = arg2;
+    entry->targetMask = arg3;
+
+    if (arg1 == 8 || arg1 == 4 || arg1 == 0x17) {
+        func_800A5660(arg0, arg2);
+    }
+
+    func_800A4D88(func_800A44D8(arg0));
+    D_800F5F44.D_800F7DAC &= ~(1 << arg0);
+    D_800F5F44.D_800F7DC2 |= 1 << arg0;
+    D_800F39DC = (D_800F39DC + 1) & 0xF;
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800A4480);
 
@@ -396,7 +418,15 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800A50E0);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800A5250);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800A555C);
+void func_800A555C(s32 arg0, s32 arg1) {
+    u8* entry = D_8009D954 + arg0 * 0x440 + arg1 * 8;
+    s32 tblOff = arg1 * 0x1C;
+
+    entry[6] = 2;
+    entry[5] = D_800708D0[tblOff];
+    entry[0] = (s8)(arg1 - 0x48);
+    entry[1] = (u8)(*(u16*)(D_800708C8 + tblOff));
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", func_800A55BC);
 
