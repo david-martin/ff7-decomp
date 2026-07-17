@@ -282,15 +282,15 @@ void func_800A4350(u8 actorId, u8 cmdIndex, s16 attackIndex, u16 targetMask) {
     }
 
     entry = &D_800F3958[D_800F39DC];
-    entry->priority = (cmdIndex == CMD_LIMIT) ? 5 : 6;
+    entry->priority = (cmdIndex == CMD_LIMIT_CATASTROPHE) ? 5 : 6;
     entry->actorId = actorId;
     entry->cmdIndex = cmdIndex;
     entry->attackIndex = attackIndex;
     entry->targetMask = targetMask;
 
-    // CMD_THROW/CMD_ITEM confirmed; 0x17 is still an unconfirmed command (past
-    // CMD_LIMIT, not one of the values captured live so far).
-    if (cmdIndex == CMD_THROW || cmdIndex == CMD_ITEM || cmdIndex == 0x17) {
+    // The three inventory-consuming commands all get this extra call.
+    if (cmdIndex == CMD_THROW || cmdIndex == CMD_ITEM ||
+        cmdIndex == CMD_W_ITEM) {
         func_800A5660(actorId, attackIndex);
     }
 

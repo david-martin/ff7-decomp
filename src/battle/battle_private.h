@@ -191,7 +191,11 @@ typedef struct {
 } Unk80151200; // size:0x74
 
 // Confirmed live via PCSX-Redux (exec breakpoint on func_800A4350, one command
-// at a time): 0x0E-0x11 still unconfirmed (likely W-Magic/W-Summon/W-Item).
+// at a time). 0x0E-0x11 and 0x19 still unconfirmed. 0x14/0x18/0x1A/0x1B are
+// each a DIFFERENT limit-break technique (Catastrophe/Slash-All/Flash/4x Cut)
+// with a distinct cmdIndex per technique, not one shared "limit" command --
+// only 0x14 is special-cased to priority 5 in func_800A4350, so whatever the
+// other limit techniques' priority actually is remains an open question.
 typedef enum {
     CMD_ATTACK = 0x01,
     CMD_MAGIC = 0x02,
@@ -208,7 +212,13 @@ typedef enum {
     CMD_ENEMY_SKILL = 0x0D,
     CMD_CHANGE = 0x12,
     CMD_DEFEND = 0x13,
-    CMD_LIMIT = 0x14,
+    CMD_LIMIT_CATASTROPHE = 0x14, // priority-5 special case in func_800A4350
+    CMD_W_MAGIC = 0x15,
+    CMD_W_SUMMON = 0x16,
+    CMD_W_ITEM = 0x17,
+    CMD_LIMIT_SLASH_ALL = 0x18,
+    CMD_LIMIT_FLASH = 0x1A,
+    CMD_LIMIT_4X_CUT = 0x1B,
     CMD_NONE = 0xFF, // enemy attack / not a player-menu command
 } BattleCommand;
 
