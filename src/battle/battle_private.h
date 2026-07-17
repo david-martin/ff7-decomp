@@ -191,12 +191,7 @@ typedef struct {
 } Unk80151200; // size:0x74
 
 // Confirmed live via PCSX-Redux (exec breakpoint on func_800A4350, one command
-// at a time). 0x0E-0x11 and 0x19 still unconfirmed. CMD_SLASH_ALL/CMD_FLASH/
-// CMD_4X_CUT are NOT limit-break techniques -- they're separate materia that
-// overwrite the Attack command itself, each getting its own distinct
-// cmdIndex. CMD_LIMIT is the actual Limit Break (confirmed via Barret's
-// Catastrophe), and is the only one special-cased to priority 5 in
-// func_800A4350.
+// at a time). 0x0E-0x11 and 0x19 still unconfirmed.
 typedef enum {
     CMD_ATTACK = 0x01,
     CMD_MAGIC = 0x02,
