@@ -191,9 +191,14 @@ typedef struct {
 } Unk80151200; // size:0x74
 
 // Confirmed live via PCSX-Redux (exec breakpoint on func_800A4350, one command
-// at a time). 0x0E-0x11 still unconfirmed. "All"-linked materia (Steal-All,
-// Sense-All, etc) reuse their base command's cmdIndex -- targetMask changes,
-// not cmdIndex.
+// at a time, plus direct cmdIndex injection for the remaining gaps). "All"-
+// linked materia (Steal-All, Sense-All, etc) reuse their base command's
+// cmdIndex -- targetMask changes, not cmdIndex. 0x0E-0x10 and past 0x1B are
+// unused/no-op (injected directly, no visible effect and not reachable via
+// any known menu path). 0x11 forces a melee attack ignoring weapon range
+// (injected on Barret with a long-range weapon -- he closed to melee instead
+// of shooting), not reachable via any menu path either -- possibly an
+// internal command for a status-forced attack (Berserk?), unconfirmed.
 typedef enum {
     CMD_ATTACK = 0x01,
     CMD_MAGIC = 0x02,
@@ -208,6 +213,7 @@ typedef enum {
     CMD_MANIPULATE = 0x0B,
     CMD_MIME = 0x0C,
     CMD_ENEMY_SKILL = 0x0D,
+    CMD_MELEE_ATTACK = 0x11, // ignores weapon range; not player-menu-reachable
     CMD_CHANGE = 0x12,
     CMD_DEFEND = 0x13,
     CMD_LIMIT = 0x14, // priority-5 special case in func_800A4350
