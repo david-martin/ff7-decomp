@@ -191,7 +191,9 @@ typedef struct {
 } Unk80151200; // size:0x74
 
 // Confirmed live via PCSX-Redux (exec breakpoint on func_800A4350, one command
-// at a time). 0x0E-0x11 and 0x19 still unconfirmed.
+// at a time). 0x0E-0x11 still unconfirmed. "All"-linked materia (Steal-All,
+// Sense-All, etc) reuse their base command's cmdIndex -- targetMask changes,
+// not cmdIndex.
 typedef enum {
     CMD_ATTACK = 0x01,
     CMD_MAGIC = 0x02,
@@ -213,6 +215,7 @@ typedef enum {
     CMD_W_SUMMON = 0x16,
     CMD_W_ITEM = 0x17,
     CMD_SLASH_ALL = 0x18, // materia-granted Attack-command replacement
+    CMD_2X_CUT = 0x19,    // materia-granted Attack-command replacement
     CMD_FLASH = 0x1A,     // materia-granted Attack-command replacement
     CMD_4X_CUT = 0x1B,    // materia-granted Attack-command replacement
     CMD_NONE = 0xFF,      // enemy attack / not a player-menu command
