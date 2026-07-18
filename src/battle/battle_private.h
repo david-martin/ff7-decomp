@@ -213,7 +213,7 @@ typedef enum {
     CMD_MANIPULATE = 0x0B,
     CMD_MIME = 0x0C,
     CMD_ENEMY_SKILL = 0x0D,
-    CMD_MELEE_ATTACK = 0x11, // ignores weapon range; not player-menu-reachable
+    CMD_MELEE_ATTACK = 0x11, // ignores weapon range; not player-menu-reachable?
     CMD_CHANGE = 0x12,
     CMD_DEFEND = 0x13,
     CMD_LIMIT = 0x14, // priority-5 special case in func_800A4350
@@ -233,7 +233,11 @@ typedef enum {
 // D_800F3958 is a 16-entry ring buffer of these (D_800F39D8 read idx,
 // D_800F39DC write idx); the wiki describes up to 64 queued actions, so this
 // may be a smaller staging ring rather than the full logical queue --
-// unconfirmed.
+// unconfirmed. Drain chain: func_800A3ED0 drains this ring into a 64-slot
+// priority table (func_800A3D4C), which func_800A23E0 drains in priority
+// order into func_800A1798, which runs the command as a byte-coded sequence
+// of opcodes (D_800F38AC/D_800A0098/D_800E7B28), not a single switch on
+// cmdIndex. Full writeup: ff7-re/reference/BATTLE_COMMAND_QUEUE.md
 typedef struct {
     /* 0x0 */ u8
         priority; // 0=limits/counters, 6=player spells (see func_800A4350)
