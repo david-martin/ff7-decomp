@@ -284,28 +284,40 @@ typedef struct {
     /* 0x10F0 */ u32 D_8009D7D4;
 } SaveWork; // size: 0x10F4
 
+// The "current action" context battle.c operates on via global D_80063014.
+// Field names/roles cross-referenced against the community-documented
+// "Actor Battle Data" struct at
+// https://wiki.ffrtt.ru/index.php/FF7/Battle/Battle_Mechanics -- renamed
+// only where this codebase's own (already-decompiled) usage independently
+// corroborates the wiki's offset (a matching bit value, an existing
+// formula, a confirmed array/sentinel pattern, etc), not from the wiki
+// alone. Fields with no such local confirmation are left as unkXX even
+// where the wiki names them.
 typedef struct {
-    s32 unk0;
-    s32 unk4;
+    s32 actorId; // used to self-check status/config (func_800B10B4,
+                 // D_800F5EFC[actorId*0x18]) and to seed a self-target bit
+                 // (1 << actorId)
+    s32 level;   // used as `x += level / 21` in an unlifted scaling calc
     s32 unk8;
-    s32 unkC;
-    s32 unk10;
+    s32 cmdIndex;    // per an existing comment on func_800A1798
+    s32 actionIndex; // copied into cmdIndexCopy/actionIndexCopy below
     s32 unk14;
-    s32 unk18;
+    s32 allowedTargetsMask; // set to `1 << actorId` (self-target default)
     s32 unk1C;
-    s32 unk20;
-    s32 unk24;
-    s32 unk28;
-    s32 unk2C;
+    s32 cmdAnimation; // saved/restored (temp = x; ...; x = temp) -- an
+                      // animation-index idiom
+    s32 attackEffect;
+    s32 cmdIndexCopy;    // wiki: "Command Index (again)"
+    s32 actionIndexCopy; // confirmed: set to actionIndex verbatim elsewhere
     s32 unk30;
     u8 unk34[4]; // character spacing array
-    s32 unk38;
+    s32 mpCost;  // cleared before a cost calc
     s32 unk3C;
     s32 unk40;
-    s32 unk44;
-    s32 unk48;
-    s32 unk4C;
-    s32 unk50;
+    s32 actionElement;
+    s32 actionPower;
+    s32 attackPower; // confirmed: `attackPower = strength * 2`
+    s32 targetMask;  // 0xFF sentinel pattern ("no target yet" / "all")
     s32 unk54;
     s32 unk58;
     s32 unk5C;
@@ -317,28 +329,32 @@ typedef struct {
     s32 unk74;
     s32 unk78;
     s32 unk7C;
-    s32 unk80;
+    s32 inflictStatusMask; // confirmed: set to 0x400000, this session's
+                           // confirmed Manipulate status bit
     s32 unk84;
     s32 unk88;
     s32 unk8C;
-    s32 unk90;
+    s32 cmdProperties; // several unlifted callers OR in one flag each
+                       // (0x80/0x40/0x04/0x800) from an incoming arg
     s32 unk94;
-    s32 unk98;
+    s32 attackScenePos; // set to actionIndexCopy's value in one place
     s32 unk9C;
     s32 unkA0;
     s32 unkA4;
     s32 unkA8;
     s32 unkAC;
     s32 unkB0;
-    s32 unkB4;
+    s32 followUpCount; // small assigned constants (2, 4)
     s32 unkB8;
-    s32 unkBC;
-    s32 unkC0;
+    s32 attackAddlEffect; // paired with addlEffectModifier below (both
+                          // set together from two args, or -1 = none)
+    s32 addlEffectModifier;
     s32 unkC4;
-    s32 unkC8;
-    s32 unkCC;
-    u8 unkD0[8];
-    s32 unkD8;
+    s32 actorStatus;       // confirmed: `& 0x200000`, this session's confirmed
+                           // Death Sentence status bit
+    s32 unkCC;             // indexes D_800A01A8, otherwise unidentified
+    u8 followUpActions[8]; // confirmed: 0xFF-sentinel-terminated array
+    s32 strength;          // confirmed via the attackPower formula above
     s32 unkDC;
     s32 unkE0;
     s32 unkE4;
@@ -351,29 +367,33 @@ typedef struct {
     s32 unk100[0x40];
     s32 unk200;
     s32 unk204;
-    s32 unk208;
+    s32 targetIdx; // confirmed: indexes D_800F83E0 directly
     s32 unk20C;
     s32 unk210;
-    s32 unk214;
-    s32 unk218;
+    s32 targetDamage;     // accumulated (`*=`) and reset in the same function
+    s32 attackProperties; // confirmed: `|= 2`, matching the wiki's own
+                          // "bit 2 = Physical" note
     s32 unk21C;
-    s32 unk220;
+    s32 attackPropertiesExtra; // wiki: heal/critical/damage-MP flags;
+                               // only bit 0's existence is locally
+                               // confirmed, not its specific meaning
     s32 unk224;
     s32 unk228;
     s32 unk22C;
-    s32 unk230;
-    s32 unk234;
-    s32 unk238;
-    s32 unk23C;
-    s32 unk240;
-    s32 unk244;
+    s32 damageLevel;          // gated on `& 0x40`, reassigned to 1 or 0x80
+    s32 targetConditionFlags; // confirmed: `& 2` checked
+    s32 statusToAdd;          // confirmed: cleared together with the next 3
+                              // fields in the same function
+    s32 statusToCure;
+    s32 statusToToggle;
+    s32 statusAffectedMask;
     s32 unk248;
     s32 unk24C;
     s32 unk250;
     s32 unk254;
-    s32 unk258;
-    s32 unk25C;
-} Unk800A8D04; // size: ???
+    s32 targetHP;  // confirmed: read and compared against a running value
+    s32 targetMP;  // ditto
+} ActorBattleData; // size: 0x260
 
 // seems to be related to a party member during battle
 typedef struct {
@@ -642,7 +662,8 @@ extern Gpu D_80062F24;
 extern u16 D_80062F3C;
 extern s32 D_80062F58;
 extern u_long* D_80062FC4;
-extern Unk800A8D04* D_80063014;
+extern ActorBattleData* D_80063014; // "current action" context, see the
+                                    // struct's own comment
 extern DRAWENV D_800706A4[2];
 extern u8 g_FieldMusicLock; // MUSIC/FMUSC skip the sound engine while nonzero
                             // (set by the MULCK opcode)

@@ -26,10 +26,32 @@ typedef enum {
 } BattleEventType;
 
 typedef struct {
-    // condition/status bitmask; standard FF7 status bits confirmed in use here:
-    // 0x1 Death, 0x80 Silence, 0x800 Frog, 0x1000 Small, 0x200000 Death
-    // Sentence, 0x400000 Manipulate, 0x800000 Berserk. NOTE: the standard
-    // table's bit 0x2 (Near Death) does not appear to be set here -- this
+    // condition/status bitmask. Full 32-bit table per
+    // https://wiki.ffrtt.ru/index.php/FF7/Battle/Status_Effects; bits marked
+    // (*) were live-confirmed (pcsx-redux, one status at a time) this
+    // session and matched the wiki exactly -- the rest are the wiki's word
+    // alone, not locally verified:
+    //   0x1 Death(*)         0x100000 Shield
+    //   0x2 Near Death       0x200000 Death Sentence(*)
+    //   0x4 Sleep(*)         0x400000 Manipulate(*)
+    //   0x8 Poison(*)        0x800000 Berserk(*)
+    //   0x10 Sadness(*)      0x1000000 Peerless
+    //   0x20 Fury            0x2000000 Paralysis
+    //   0x40 Confu(*)        0x4000000 Darkness
+    //   0x80 Silence(*)      0x8000000 Dual Drain
+    //   0x100 Haste(*)       0x10000000 Death Force(*)
+    //   0x200 Slow(*)        0x20000000 Resist(*)
+    //   0x400 Stop(*)        0x40000000 "Lucky Girl"
+    //   0x800 Frog(*)        0x80000000 Imprisoned
+    //   0x1000 Small(*)
+    //   0x2000 Slow Numb
+    //   0x4000 Petrify
+    //   0x8000 Regen(*)
+    //   0x10000 Barrier(*)
+    //   0x20000 M.Barrier(*)
+    //   0x40000 Reflect(*)
+    //   0x80000 Dual
+    // NOTE: bit 0x2 (Near Death) does not appear to be set here -- this
     // engine computes Near Death live from curHP/maxHP instead (see
     // func_800B10B4), not via this flag.
     s32 status;
@@ -52,8 +74,10 @@ typedef struct {
     s16 unk20;
     s16 unk22;
     s32 unk24;
-    s16 unk28;
-    s16 unk2A;
+    s16 curMP; // confirmed via func_800ABA68, which snapshots this alongside
+               // curHP into a D_800F9F3C checkpoint entry
+    s16 maxMP; // structural: mirrors maxHP's gating role for curHP, now
+               // reinforced by curMP actually existing right before it
     u32 curHP;
     u32 maxHP;
     u32 unk34[4];
@@ -351,8 +375,10 @@ extern Unk800F5F44 D_800F5F44;
 extern s8 D_800F6936[0x40][8];
 extern s16 D_800F83AE[10][0x34]; // overlaps with D_800F83E0, D_800F83A8
 #define D_800F83A8 (*((u8*)&D_800F83AE[0][0] - 6))
-extern s16 D_800F83CC; // overlaps with D_800F83AE, sceneID
-extern Unk800F83E0 D_800F83E0[3];
+extern s16 D_800F83CC;             // overlaps with D_800F83AE, sceneID
+extern Unk800F83E0 D_800F83E0[10]; // party 0-2, enemy 4-9 (3 unused); confirmed
+                                   // via batini.c's D_800F83E0[4+i] loop and
+                                   // the overlapping D_800F83AE[10] above
 extern s8 D_800F90B4[][0x240];
 extern Unk800BB75C D_800FA63C;
 extern Unk801517C0* D_801517C0;

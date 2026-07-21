@@ -35,8 +35,9 @@ typedef struct {
     s32 unk30;
     s32 unk34;
     s32 unk38;
-    u16 unk3C;
-    u16 unk3E;
+    u16 curHP; // set (clamped to maxHP) by func_800A3534; type confirmed
+               // u16 via PR #83's upstream review (was unk3C)
+    u16 curMP; // set (clamped to maxMP) by func_800A3534 (was unk3E)
     s32 unk40;
 } Unk800AF470; // 0x44
 
@@ -71,25 +72,89 @@ typedef struct {
     s16 unk1A;
 } Unk801620AC; // size:0x20
 
+// Generic 100-slot process pool: func_800BBEAC() allocates a slot bound to a
+// per-frame callback; ~14 unrelated callback families (damage popups, a
+// bitmask-scanning dispatcher, a joined-function-pointer dispatcher, a
+// 16.16 fixed-point ramp pair, six status-effect visual sequencers, a frame
+// sequencer, barrier's 3D BarrierData in magic/barrier.c, ...) reinterpret
+// these bytes for their own purposes. Field names below match the
+// best-confirmed usage; not all callbacks agree with them, and several
+// families never touch anything past target_battler_idx/damage_dealt at all.
 typedef struct {
-    /* 0x00 */ s16 D_80162978;
-    /* 0x02 */ s16 D_8016297A;
-    /* 0x04 */ s16 D_8016297C;
-    /* 0x06 */ s16 D_8016297E;
-    /* 0x08 */ s16 D_80162980;
-    /* 0x0A */ s16 D_80162982;
-    /* 0x0C */ s16 unk8;
-    /* 0x0E */ s16 unkA;
-    /* 0x10 */ s16 unkC;
-    /* 0x12 */ s16 unkE;
-    /* 0x14 */ s16 unk10;
-    /* 0x16 */ s16 unk12;
-    /* 0x18 */ u8 unk14;
-    /* 0x19 */ u8 unk15;
-    /* 0x1A */ s16 unk16;
-    /* 0x1C */ s16 unk18;
-    /* 0x1E */ s16 unk1A;
-} Unk80162978; // size:0x20
+    /* 0x00 */ s16 state; // -1 == free; scanned by func_800BBEAC's allocator.
+                          // Repurposed as an internal scan cursor while alive
+                          // in func_800D57C0/func_800D5350 (bitmask families)
+                          // and as a step index in func_800D5938.
+    /* 0x02 */ s16 tick_count; // genuine up-counter 0..delay only in the
+                               // func_800D57C0 family; in most others (the
+                               // 6 status-effect callbacks, func_800C679C)
+                               // it's just a one-shot 0->1 "initialized"
+                               // latch, not a real counter.
+    /* 0x04 */ s16 delay;      // countdown to free/fire in most families
+                          // (status-effect callbacks included); tick_count's
+                          // cap in func_800D57C0; a target bitmask in
+                          // func_800D5350; low half of a 16.16 fixed-point
+                          // accumulator (paired with preset_idx) in the
+                          // func_800D508C/func_800D5230 ramp family.
+    /* 0x06 */ s16 preset_idx; // index into the D_800F9F3C HP/MP-preset
+                               // table, forwarded to func_800A3534, in the
+                               // func_800CE970/func_800CE7E0 family; -1 =
+                               // none. A stagger-modulus period in
+                               // func_800D57C0/func_800D5938. High half of
+                               // the ramp family's fixed-point accumulator.
+                               // Low byte reused as an SFX-gate flag in the
+                               // status-effect callback family.
+    /* 0x08 */ s16 target_battler_idx; // target battler in most families.
+                                       // A remaining-targets bitmask in
+                                       // func_800D57C0; a per-bit repeat
+                                       // count in func_800D5350; low half of
+                                       // a per-tick fixed-point step (paired
+                                       // with damage_dealt) in the ramp
+                                       // family.
+    /* 0x0A */ s16 damage_dealt; // actual damage, or -1 for a miss/no-effect
+                                 // outcome, in the func_800CE970/CE7E0
+                                 // family. High half of the ramp family's
+                                 // per-tick step. Untouched (like everything
+                                 // past this point) by the 6 status-effect
+                                 // callbacks and func_800C679C/func_800D5938
+                                 // -- those families only ever use the 5
+                                 // fields above.
+    /* 0x0C */ s16 unk8;  // independent config value (func_800B8A34 family:
+                          // a snapshot of "current battler" global
+                          // D_801590CC); combined w/ unkA as one
+                          // void(*)(int,int) function pointer in the
+                          // func_800D5444/func_800D5350 family; combined
+                          // w/ unkA as one s32 "countdown" (ticks
+                          // remaining) in the func_800D508C/func_800D5230
+                          // ramp family (see PoolAccum32).
+    /* 0x0E */ s16 unkA;  // ditto; also read standalone as a flags word (bit
+                          // 0x2 checked) in func_800CE970/func_800CE7E0.
+    /* 0x10 */ s16 unkC;  // combined w/ unkE as one sign-extended s32 from a
+                          // config table (D_800F99F0) in the func_800B8A34
+                          // family, consumed downstream by func_800CEB48
+                          // (untraced -- 492 instructions).
+    /* 0x12 */ s16 unkE;  // ditto.
+    /* 0x14 */ s16 unk10; // combined w/ unk12 as one sign-extended s32 from
+                          // a config table (D_800F99F2) in the
+                          // func_800B8A34 family; consumer not yet traced.
+                          // Untouched by every other family examined,
+                          // including the ramp family (which stops at unkE).
+    /* 0x16 */ s16 unk12; // ditto.
+    /* 0x18 */ u8 unk14;  // a D_800F8CF0 global snapshot in the
+                          // func_800B8A34 family. Untouched elsewhere.
+    /* 0x19 */ u8 unk15;  // a config-table byte (D_800F99F6) in the
+                          // func_800B8A34 family, forwarded all the way to
+                          // func_800A3534's first argument -- which is
+                          // provably unused there (a confirmed dead end for
+                          // this path). Untouched elsewhere.
+    /* 0x1A */ s16 unk16; // not touched by any of the ~14 callback families
+                          // or constructors examined so far, including
+                          // barrier.c's BarrierData (which stops modeling
+                          // fields at 0x1B). Either reserved/padding, or
+                          // owned by a callback family not yet found.
+    /* 0x1C */ s16 unk18; // ditto.
+    /* 0x1E */ s16 unk1A; // ditto.
+} BattleCallbackSlot;     // size:0x20
 
 typedef struct {
     u16 unk0;
@@ -422,7 +487,7 @@ extern s16 D_80162084;
 extern s8 D_80162094;
 extern Unk801620AC D_801620AC[10];
 extern Unk801621F0 D_801621F0[60];
-extern Unk80162978 D_80162978[100];
+extern BattleCallbackSlot D_80162978[100];
 extern u8 D_801635FC;
 extern u8 D_80163604;
 extern s16 D_80163608;
@@ -527,6 +592,7 @@ extern u8 D_800F5630;
 extern u16 D_800F5634;
 extern u8 D_800F5638;
 extern u8 D_800F563C;
+extern s16 D_800F5B74;
 extern u8 D_800F5EFC[]; // per-slot formation-setup config, 0x18 B stride; byte
                         // 0 -> func_800A8D18
 extern BattleMenuWidget D_800F90C6[];

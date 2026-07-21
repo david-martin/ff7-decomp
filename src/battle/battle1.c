@@ -13,7 +13,7 @@ static s32 func_800B3FAC(s32 arg0);
 static void func_800B7FDC(void);
 static void func_800B8360(s32);
 static void func_800B85E0();
-static void func_800B88CC(s32 arg0);
+static void func_800B88CC(s32 battler_idx);
 static void func_800BA4C8(void);
 void func_800BA598(s16);
 static void func_800BB030(s16);
@@ -487,14 +487,13 @@ s16 func_800B888C(s32 arg0) {
     }
 }
 
-// initialize D_80162978 slot v (registered via func_800BBEAC) from arg0 and
-// dispatch
-static void func_800B88CC(s32 arg0) {
+// Registers func_800CE970 for battler_idx, fires immediately (delay=0).
+static void func_800B88CC(s32 battler_idx) {
     s32 v = func_800BBEAC(&func_800CE970);
 
-    D_80162978[v].D_8016297C = 0;
-    D_80162978[v].D_80162980 = arg0;
-    func_800B8A34(func_800B888C(arg0), v);
+    D_80162978[v].delay = 0;
+    D_80162978[v].target_battler_idx = battler_idx;
+    func_800B8A34(func_800B888C(battler_idx), v);
 }
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B8944);

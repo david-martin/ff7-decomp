@@ -143,7 +143,7 @@ void func_801B18F8(Unk8009D84C* arg0, Unk801B18F8* arg1, Unk800F83E0* arg2) {
     arg2->unk14 = arg0->unk6;
     arg2->unk15 = arg0->unk7;
     arg2->maxHP = arg0->unk12;
-    arg2->unk2A = arg0->unk16;
+    arg2->maxMP = arg0->unk16;
     arg2->unkD = arg0->unk8;
     arg2->unkE = arg0->unkC;
     arg2->unk20 = arg0->unkA;
@@ -152,7 +152,7 @@ void func_801B18F8(Unk8009D84C* arg0, Unk801B18F8* arg1, Unk800F83E0* arg2) {
         arg2->unkD = 1;
     }
     arg1->unk12 = arg2->maxHP;
-    arg1->unk10 = arg2->unk2A;
+    arg1->unk10 = arg2->maxMP;
     if (arg0->unk23 & 8) {
         arg1->unk16 = 999;
         arg1->unk14 = 9999;
