@@ -158,6 +158,8 @@ typedef struct {
     /* 0x84 */ s32 exp;
     /* 0x88 */ s32 gil;
     /* 0x8C */ s32 statusImmunities;
+    // unk90[4] (byte 0xA0): u16 "on-death scripted action" id, 0xFFFF
+    // sentinel = none configured (confirmed via func_800A2DB0)
     /* 0x90 */ u32 unk90[10];
 } SceneEnemy; // size:0xB8
 
@@ -369,6 +371,9 @@ typedef struct {
     /* 0x32 */ u16 unk32;
 } Unk800F5E60; // size:0x34
 
+// aliases D_800F5BB8[10] (Unk800AF470, stride 0x44/2=0x22 u16s): index 0 of
+// each row IS D_800F5BB8[i].unk4, the ATB gauge (confirmed via
+// func_801B0668, which seeds gauges through this symbol)
 extern u16 D_800F5BBC[10][0x22];
 extern Unk800F5E60 D_800F5E60[3];
 extern Unk800F5F44 D_800F5F44;
@@ -394,6 +399,6 @@ int func_800BBEAC(void (*func)(void));
 // battle2.c
 void* func_800D29D4(Unk801B0C98*, u_long**, int, void*);
 void func_800D3994(s32 arg0, s32 arg1, void* arg2);
-void func_800D5444(int, int, int, void (*func)(int));
+void func_800D5444(int, int, int, void (*func)(int, int));
 void func_800D55F4(int, int, int);
 int func_800D574C(int);

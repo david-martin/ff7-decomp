@@ -318,11 +318,14 @@ typedef struct {
     s32 actionPower;
     s32 attackPower; // confirmed: `attackPower = strength * 2`
     s32 targetMask;  // 0xFF sentinel pattern ("no target yet" / "all")
-    s32 unk54;
-    s32 unk58;
-    s32 unk5C;
-    s32 unk60;
-    s32 unk64;
+    s32 unk54;       // populated by both func_800A81B8 (weapon config) and
+                     // func_800A79CC (kernel AttackData, = impactSfxID there)
+    s32 unk58;       // same source as unk54; func_800A79CC sets both equal
+    s32 unk5C;       // same shape; func_800A79CC skips this one if unk6C & 4
+    s32 unk60;       // confirmed via func_800A79CC: defaults from the resolved
+                     // AttackEntry's cameraSingleID (offset 8), overridable per
+                     // Limit-Break-variant or per-enemy-attack lookup
+    s32 unk64;       // ditto, from AttackEntry.cameraMultiID (offset 0xA)
     s32 unk68;
     s32 unk6C;
     s32 unk70;
@@ -335,7 +338,15 @@ typedef struct {
     s32 unk88;
     s32 unk8C;
     s32 cmdProperties; // several unlifted callers OR in one flag each
-                       // (0x80/0x40/0x04/0x800) from an incoming arg
+                       // (0x80/0x40/0x04/0x800) from an incoming arg;
+                       // 0x2000 confirmed via func_800AD0FC -- gates a call
+                       // to the on-death handler func_800A2DB0; 0x200
+                       // confirmed via func_800A1798 -- gates a per-
+                       // equipped-materia command-linked charge-counter
+                       // dispatch (see D_80162978_INVESTIGATION.md,
+                       // "Steal As Well"); 0x100000 set by that same
+                       // dispatch when a matching materia's charge count
+                       // is already exhausted
     s32 unk94;
     s32 attackScenePos; // set to actionIndexCopy's value in one place
     s32 unk9C;
@@ -375,8 +386,9 @@ typedef struct {
                           // "bit 2 = Physical" note
     s32 unk21C;
     s32 attackPropertiesExtra; // wiki: heal/critical/damage-MP flags;
-                               // only bit 0's existence is locally
-                               // confirmed, not its specific meaning
+                               // confirmed via func_800AD0FC: bit 0 = heal
+                               // (vs. damage), bit 2 (0x4) = apply to MP
+                               // instead of HP
     s32 unk224;
     s32 unk228;
     s32 unk22C;
@@ -416,20 +428,58 @@ typedef struct {
     s8 unk22;
     s8 unk23;
     u8 unk24[0x28];
-    u8 un4C[4][6];
-    u8 un64[0x48];
+    // 16 rows (confirmed via func_801B11BC, which walks all 16): one 6-byte
+    // resolved-effect row per equipped materia slot (8 weapon + 8 armor,
+    // Savemap.materia_weapon[8]/materia_armor[8]). Row: [0]=materia id
+    // (0xFF=unused), [1]/[2] resolved kernel ability-effect byte (see
+    // func_801B11BC), [3]=3 by default (func_801B137C), [4]=a 0xFF/status
+    // sentinel toggled by func_801B11BC, [5] unconfirmed.
+    u8 un4C[16][6];
     u8 unAC[4];
     u8 unB0[0x390];
 } Unk8009D84C; // size: 0x440
 
+// Per-materia kernel record, 0x14 B stride, indexed by materia ID
+// (0x00-0x5A per the community materia-ID table; 0xFF = empty slot).
 typedef struct {
     /* 00 */ u16 unk0;
     /* 02 */ u16 unk2;
-    /* 04 */ u16 unk4[6];
+    /* 04 */ u16 unk4[6]; // [0..3] confirmed: AP thresholds (x100) for
+                          // star level 2/3/4/5; 0xFFFF = "no such level"
+                          // (materia masters earlier). func_8001AC9C
+                          // computes current star level (1-5) by checking
+                          // a materia's live AP against these, highest
+                          // first, and separately counts how many of the
+                          // 4 are real (not 0xFFFF) into D_80062FBC.
+                          // [4]/[5] unconfirmed (kept in-array, not split
+                          // out, because other code indexes this array
+                          // dynamically up to [4]).
     /* 10 */ u8 unk10;
-    /* 11 */ u8 unk11;
-    /* 12 */ u16 unk12;
-} Unk800730CC;
+    /* 11 */ u8 unk11;  // aliased elsewhere as D_800730DD[id][0]; &0xF =
+                        // pairing category: 5 = Support (needs a partner,
+                        // func_801B14E8/func_80017F38), 7 = "fire once per
+                        // battle" support (func_801B11BC/func_801B1530),
+                        // 6/8/9/10/11/12 = which of 6 writer functions a
+                        // paired Support materia's bonus routes to when
+                        // THIS materia is the partner (func_80018D4C).
+    /* 12 */ u8 opcode; // aliased elsewhere as D_800730DE[id][0]; for a
+                        // Support-category materia, its own "which
+                        // effect" opcode (0x51-0x63, func_80018028's
+                        // dispatch -- see func_80018028's own comment in
+                        // src/main/18B8.c for the full opcode map).
+    /* 13 */ u8 unk13;  // aliased elsewhere as D_800730DF[id][0]; start of
+                        // a per-effect parameter block func_80018028
+                        // copies 5 bytes from (into scratch D_80062E54) --
+                        // NOT fully resolved: a naive 5-byte read from
+                        // this offset runs 4 bytes past this struct's
+                        // declared 0x14-byte end, into the next materia
+                        // record. Either this struct needs more trailing
+                        // fields than currently declared, or the real
+                        // parameter block lives at a different base this
+                        // investigation hasn't identified -- flagged, not
+                        // guessed.
+} Unk800730CC; // confirmed size >= 0x14; see unk13's comment for why the
+               // true size may be larger
 
 typedef struct {
     u8 unk0;
@@ -682,7 +732,39 @@ extern MATRIX* D_80071E40;
 extern u8 D_80071E34;
 extern u8 g_CurrentEntity; // entity owning the currently executing script
 extern Unk800730CC D_800730CC[];
-extern u8 D_800730DD[][0x14];
+// D_800730DD/DE/DF are NOT independent arrays -- confirmed aliases of
+// Unk800730CC's own unk11/opcode/unk13 fields (same 0x14 stride, byte
+// offsets 0x11/0x12/0x13 respectively). Kept as separate declarations
+// only because that's how they were first found (raw asm operands, no
+// backing struct-field access yet); prefer `D_800730CC[id].unk11` etc.
+// going forward.
+extern u8 D_800730DD[][0x14]; // == D_800730CC[id].unk11
+extern u8 D_800730DE[][0x14]; // == D_800730CC[id].opcode
+extern u8 D_800730DF[][0x14]; // == D_800730CC[id].unk13 (+ overflow, see
+                              // Unk800730CC.unk13's own comment)
+
+// Elemental-affinity resolver pair (func_80019608 + these two tables):
+// D_80069508[16] holds up to 16 known element IDs (fixed/kernel-wide,
+// populated elsewhere -- not yet traced); func_80019608(elementId) linear-
+// scans it and returns the matching slot index (0-15) or -1. D_8006950A
+// is the parallel PER-CHARACTER output, 3 bytes/slot (one element's
+// weak/resist/absorb-style flag triplet, unconfirmed which byte is which)
+// -- OR'd with a caller-supplied flag by func_80018ECC/func_80018FC0 (the
+// category-6/8 writers reached from func_80018D4C's paired-Support-materia
+// dispatch, i.e. materia pairing with an Elemental-adjacent partner).
+extern u8 D_80069508[16];
+extern u8 D_8006950A[16][3];
+
+// Status-affinity resolver pair, same shape as the elemental one above but
+// for statuses: D_80069554[56] holds up to 56 known status IDs (kernel-
+// wide, byte-per-status encoding rather than the runtime 32-bit bitmask);
+// func_8001964C(statusId) resolves to a slot index (0-55) or -1.
+// D_80069558 is the parallel per-character output, 5 bytes/slot -- OR'd
+// with a caller-supplied flag by func_800190E8/func_80019064 (categories
+// 9/10 from func_80018D4C's dispatch).
+extern u8 D_80069554[56];
+extern u8 D_80069558[56][5];
+
 extern Unk80074EA4 D_80074EA4[2];
 extern u8 D_800756E8[]; // per-model flags, indexed by field model id
 extern s32 D_800756F8[];
@@ -757,6 +839,8 @@ SVECTOR* ApplyMatrixSV(MATRIX* m, SVECTOR* v0, SVECTOR* v1);
 MATRIX* RotMatrixYXZ(SVECTOR* r, MATRIX* m);
 void SystemError(char c, long n);
 
+s32 func_80014A38(u32 arg0); // bit index of the lowest set bit (log2 of a
+                             // single-bit mask)
 s32 func_80014B70(void);
 s32 func_80014BA8(s32 arg0);
 s32 func_8001521C(s32);

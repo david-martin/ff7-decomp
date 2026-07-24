@@ -1,0 +1,127 @@
+enemy attacks barret
+enemy did 151 damage to barret
+
+first break was enemy mid air animation half way to barret
+
+[f111637] func_800D58D0  (constructs func_800D57C0)
+  a0 (target_battler_idx) = 2 (0x2)
+  a1 (delay) = 2 (0x2)
+  a2 (preset_idx) = 1 (0x1)
+
+almost immediately after
+
+[f152837] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      0 (0x0000)
+  +0x04 delay              =      2 (0x0002)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      2 (0x0002)
+  +0x0A damage_dealt       =    151 (0x0097)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+almost immediately after
+
+[f162509] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      2 (0x0002)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      2 (0x0002)
+  +0x0A damage_dealt       =    151 (0x0097)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+almost immediately after
+
+[f164749] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      2 (0x0002)
+  +0x04 delay              =      2 (0x0002)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      2 (0x0002)
+  +0x0A damage_dealt       =    151 (0x0097)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+almost immediately after
+
+[f166716] func_800B88CC  (constructs func_800CE970)
+  a0 (battler_idx) = 1 (0x1)
+
+looks like same frame
+
+[f169184] func_800CE970 (damage popup, via func_800B88CC)  (slot=0)
+slot=0  owner=[func_800CE970 (damage popup, via func_800B88CC)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      0 (0x0000)
+  +0x04 delay              =      0 (0x0000)
+  +0x06 preset_idx         =     27 (0x001b)
+  +0x08 target_battler_idx =      1 (0x0001)
+  +0x0A damage_dealt       =    299 (0x012b)
+  +0x0C unk8               =      5 (0x0005)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+enemy finished attack and returned to position, no breaks again until next enemy attacked
+
+[BREAK] func_800D58D0 fired at frame 111637 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f152836] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [none] -> [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f152836] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] delay: 0 -> 2 (target=2) | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f152836] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] preset_idx: 26 -> 1 (target=2) | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f152836] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] target_battler_idx: 0 -> 2 | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 152837 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f162506] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] tick_count: 0 -> 1 (target=2) | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 162509 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f164746] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] tick_count: 1 -> 2 (target=2) | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 164749 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f166713] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] -> [none] | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f166713] slot=0 [none] tick_count: 2 -> 0 (target=0) | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f166713] slot=0 [none] target_battler_idx: 2 -> 0 | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[BREAK] func_800B88CC fired at frame 166716 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[BREAK] func_800CE970 (damage popup, via func_800B88CC) fired at frame 169184 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f169185] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [none] -> [func_800CE970 (damage popup, via func_800B88CC)] | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f169185] slot=0 [func_800CE970 (damage popup, via func_800B88CC)] delay: 2 -> 0 (target=1) | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f169185] slot=0 [func_800CE970 (damage popup, via func_800B88CC)] preset_idx: 1 -> 27 (target=1) | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f169185] slot=0 [func_800CE970 (damage popup, via func_800B88CC)] damage_dealt: 151 -> 299 (target=1) | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f169185] slot=0 [func_800CE970 (damage popup, via func_800B88CC)] target_battler_idx: 0 -> 1 | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+[f170196] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [func_800CE970 (damage popup, via func_800B88CC)] -> [none] | HP[0:7505/9269 1:5394/9044 2:1288/8723 4:0/2000(dead) 5:2000/2000 6:2000/2000] 
+

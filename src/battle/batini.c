@@ -53,7 +53,75 @@ void func_801B0490(s32 sceneID) {
     }
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/batini", func_801B0668);
+extern u16 D_800F83D0;
+extern u16 D_8016375A;
+extern u16 D_8009D864[3][0x220];
+extern u16 func_800B2F50(void);
+
+// Seeds each combatant's ATB gauge (D_800F5BBC[i][0], the same memory as
+// D_800F5BB8[i].unk4) for the encounter's opening tick, based on the
+// collapsed BattleSetupType code (D_800F5F44.D_800F7DC8): whole-side
+// (party-vs-enemy) formulas only, no per-character branching -- ruling
+// this out as a per-character "Sneak Attack" mechanism. Then mirrors the
+// party's 3 gauges into the D_8009D864 ATB display snapshot.
+void func_801B0668(void) {
+    s32 slotActiveMask = D_8016375A;
+    s32 temp[10];
+    s32 maxHalfSpeed = 0;
+    s32 i;
+
+    for (i = 0; i < 10; i++) {
+        D_800F5BBC[i][0] = 0;
+        temp[i] = 0;
+        if ((slotActiveMask >> i) & 1) {
+            temp[i] = (func_800B2F50() & 0xFFFF) >> 1;
+            if (maxHalfSpeed < temp[i]) {
+                maxHalfSpeed = temp[i];
+            }
+        }
+    }
+
+    for (i = 0; i < 10; i++) {
+        s32 setupCode;
+
+        if (!((slotActiveMask >> i) & 1)) {
+            continue;
+        }
+
+        setupCode = D_800F5F44.D_800F7DC8;
+        if (setupCode == 2 || setupCode == 4) {
+            // SETUP_BACK_ATTACK / SETUP_PINCER (collapsed codes): party
+            // starts empty, enemies start near-ready
+            if (i < 4) {
+                temp[i] = 0;
+            } else {
+                temp[i] = temp[i] + 0xF000 - maxHalfSpeed;
+            }
+        } else if (setupCode == 0 || setupCode == 5) {
+            // default / collapsed code 5: same speed-based formula both
+            // sides
+            temp[i] = temp[i] + 0xE000 - maxHalfSpeed;
+        } else {
+            // SETUP_PREEMPTIVE and everything else (collapsed
+            // SIDE_ATTACK family): party starts ready, enemies start slow
+            if (i < 4) {
+                temp[i] = 0xFFFE;
+            } else {
+                temp[i] = temp[i] >> 3;
+            }
+        }
+
+        if (D_800F83D0 & 8) {
+            temp[i] = (i < 3) ? 0xFFFE : 0;
+        }
+
+        D_800F5BBC[i][0] = temp[i];
+    }
+
+    for (i = 0; i < 3; i++) {
+        D_8009D864[i][0] = D_800F5BBC[i][0];
+    }
+}
 
 void func_801B085C(s32 arg0) {
     D_800F5F44.D_800F7DA6 = 0x10000 / ((arg0 * 480 / 256 + 0x78) * 2);
@@ -75,7 +143,92 @@ void func_801B1120(void) {
     }
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/batini", func_801B11BC);
+extern u8 D_800707C5[]; // per-materia kernel ability-effect byte, index
+                        // materiaID*8 (0xFF = no simple lookup)
+extern u8 D_800F5EFC[]; // per-slot formation-setup config, 0x18 B stride
+extern u8 D_800F5BE1[]; // per-battler flags byte, 0x44 stride
+extern u8 D_800708D0[]; // per-attack-entry flags byte, 0x1C (AttackEntry)
+                        // stride -- role of bit 0x8 unconfirmed
+
+// Cross-references each of a battler's 16 equipped-materia slots
+// (un4C[16][6], one row per weapon/armor materia) against the kernel
+// ability table, resolving each row's ability-effect byte (row[2]) and
+// marking a couple of per-row status bytes (row[1]/row[4]) along the way.
+// Also walks a second, still-unnamed sub-region of the same per-battler
+// struct (byte offsets 0x108-0x3FF) cross-referencing D_800708D0 -- fully
+// transcribed below but not understood semantically.
+void func_801B11BC(s32 arg0) {
+    Unk8009D84C* unk = &D_8009D84C[arg0];
+    u8* raw = (u8*)unk;
+    s32 i;
+
+    unk->unk21 = 1;
+    for (i = 0; i < 16; i++) {
+        u8* row = unk->un4C[i];
+        u8 materiaId = row[0];
+        u8 effectByte = 0xFF;
+
+        if (materiaId != 0xFF) {
+            s32 mark;
+
+            effectByte = D_800707C5[materiaId * 8];
+            if (effectByte != 0xFF) {
+                // NOT fully resolved: preserved as raw arithmetic rather
+                // than guessed -- the retail code reuses a stale
+                // `materiaId * 8` register here, so this branch's mark
+                // condition is incidentally "materiaId != 0", not an
+                // apparently-deliberate check.
+                mark = (materiaId != 0);
+            } else {
+                mark = (materiaId < 0x1C);
+                effectByte = D_800F5EFC[arg0 * 0x18];
+            }
+            if (mark && materiaId < 0x18) {
+                row[4] = 0xFF;
+            }
+
+            // category-7 (Sneak-Attack-style "fire once" support materia,
+            // per func_801B1530/func_801B14E8) -- clear the flag if a
+            // battler-wide bit is set
+            if (row[1] == 7 && (D_800F5BE1[arg0 * 0x44] & 2)) {
+                row[1] = 0;
+            }
+
+            if (row[4] != 0 && materiaId != 0x19) {
+                effectByte |= 0xC;
+            }
+            if ((materiaId == 5 || materiaId == 0x11) && row[4] != 0) {
+                effectByte |= 0x10;
+                row[1] = 0;
+            }
+
+            unk->unk21 = (i >> 2) + 1;
+        }
+
+        row[2] = effectByte;
+    }
+
+    // Second pass: only the off<0x1C0 range of this ~96-entry, 8-byte-
+    // stride scan actually reaches the D_800708D0 lookup below in retail
+    // (the off>=0x1C0 ranges compute a biased attackIdx that's discarded
+    // by a guard check that always fails there -- dead code, not
+    // reproduced here since it has no effect).
+    {
+        s32 off;
+
+        for (off = 0; off < 0x300; off += 8) {
+            u8 attackIdx = raw[off + 0x108];
+
+            if (attackIdx == 0xFF || off >= 0x1C0) {
+                continue;
+            }
+            if (D_800708D0[attackIdx * 0x1C] & 8) {
+                continue;
+            }
+            raw[off + 0x10A] = 0;
+        }
+    }
+}
 
 void func_801B137C(s32 arg0) {
     s32 i;

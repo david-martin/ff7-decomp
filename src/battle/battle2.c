@@ -18,7 +18,8 @@ s32 func_800BBF7C(void (*f)(void));
 s32 func_800BC04C(void (*f)());
 void func_800C2928();
 void func_800C328C();
-void func_800C3578();
+void doDeathSequence(); // was func_800C3578 -- initial (non-matching) decomp,
+                        // renamed for readability while inspecting it
 void func_800C3950();
 void func_800C3CA8();
 void func_800C40F4();
@@ -139,7 +140,7 @@ static void func_800CE0C8(s16 arg0, u8 arg1, u8 arg2) {
     func_800CE058(arg0);
     switch (arg1) {
     case 0:
-        ret = func_800BBEAC(func_800C3578);
+        ret = func_800BBEAC(doDeathSequence);
         D_80162978[ret].target_battler_idx = arg0;
         D_80162978[ret].preset_idx = arg2;
         break;
@@ -185,7 +186,7 @@ static void func_800CE21C(s16 arg0, u8 arg1) {
     func_800CE058(arg0);
     switch (D_801636B8[arg0].D_801636BC) {
     case 0:
-        ret = func_800BBEAC(func_800C3578);
+        ret = func_800BBEAC(doDeathSequence);
         D_80162978[ret].target_battler_idx = arg0;
         D_80162978[ret].preset_idx = arg1;
         break;
@@ -341,7 +342,107 @@ void func_800CE970(void) {
     }
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800CEB48);
+// Forward declarations for globals this function touches that aren't
+// declared elsewhere yet -- types are a best guess from usage, only needed
+// for this initial (non-matching) decomp.
+extern u8 D_800F8378;
+extern s16 D_80161DE8; // per-battler flag bitmask, confirmed genuinely s16
+                       // (was wrongly declared u8 -- caught while tracing
+                       // the func_800C7C4C excerpt that shares this check)
+extern u8 D_80162090;
+extern u8 D_80163B38;
+extern u8 D_800FA9C0;
+
+// func_800CE970/CE7E0's (the damage-popup family's) finalize step -- called
+// every tick once their `delay` reaches 0. Queues a sound/message cue via
+// func_800BBA84, may spawn the on-screen popup job (func_800C2928, via a
+// separate pool) the first time through, handles some scripted-event/
+// model-animation special-casing (D_8016360C.setup.stageID etc., not
+// resolved), and unconditionally frees the D_80162978 slot at the end --
+// this is where the slot ACTUALLY gets freed, not inside func_800CE970
+// itself.
+//
+// Initial decomp (m2c + manual cleanup of the array/field access) -- NOT
+// byte-matched yet, and the scripted-event branch's exact meaning is
+// unresolved.
+void func_800CEB48(void) {
+    BattleCallbackSlot* slot = &D_80162978[D_8015169C];
+    s16 soundId, cueBattlerIdx;
+    s16 attackerIdx = slot->unk8;
+    s16 targetIdx = slot->target_battler_idx;
+
+    if (slot->unkC != -1) {
+        if (slot->damage_dealt == -1 && attackerIdx >= 4) {
+            soundId = 5;
+            cueBattlerIdx = targetIdx;
+        } else {
+            soundId = slot->unkC;
+            cueBattlerIdx = targetIdx;
+        }
+        func_800BBA84(soundId, cueBattlerIdx, 0);
+    }
+
+    if (slot->unk10 != 0xFF) {
+        s32 dst = func_800BC04C(func_800CDE78);
+        D_801621F0[dst].unk8 = slot->target_battler_idx;
+        *(s32*)0x1F800000 = dst;
+        D_801621F0[dst].unk14 = slot->unk10;
+    }
+
+    if (attackerIdx != targetIdx) {
+        if (D_801518E4[targetIdx].D_801518E8 == 0x33) {
+            if (targetIdx >= 4) {
+                s32 flag = (D_800F8378 == 0)
+                               ? (((s16)D_80161DE8 >> targetIdx) & 1)
+                               : (D_80151200[targetIdx].D_8015120C & 0x10);
+                if (flag != 0) {
+                    func_800CE21C(targetIdx, 1);
+                }
+            } else {
+                D_801518E4[targetIdx].D_8015190A = 1;
+            }
+        } else {
+            D_801518E4[targetIdx].D_8015190A = 0;
+            if (D_8016360C.setup.stageID == 0x4E &&
+                ((D_80163B38 == 0xF && D_801518E4[D_801590CC].D_80151906 == 6 &&
+                  D_801518E4[D_801590CC].D_80151907 == 0x14) ||
+                 D_800FA6D4 == 4)) {
+                D_801518E4[slot->target_battler_idx].D_801518E6 = 1;
+                D_801636B8[4].D_801636B9 = 5;
+            } else {
+                D_801518E4[targetIdx].D_801518E6 =
+                    D_801518E4[targetIdx].D_801518E8;
+            }
+            D_80151200[targetIdx].D_8015120C |= 8;
+            D_801518E4[targetIdx].D_80151922 |= 1;
+            D_800FA9C0 = targetIdx;
+            if (D_801518E4[D_801590CC].D_80151906 != 0x15 ||
+                D_801518E4[D_801590CC].D_80151907 != 0xD) {
+                if (!(D_801518E4[D_800FA6D4].D_8015190B & 0x40) &&
+                    D_801031F0 == 0) {
+                    s32 flags = D_80151200[D_800FA6D4].D_80151200;
+                    if (!(flags & 0x4000) && !(flags & 0x400) &&
+                        D_80162090 == 0) {
+                        D_801518E4[D_800FA6D4].unk160.vy =
+                            D_80151200[D_800FA6D4].D_8015122C;
+                    }
+                }
+            }
+        }
+    } else if (((s16)D_80161DE8 >> attackerIdx) & 1) {
+        if (attackerIdx >= 4) {
+            D_801518E4[attackerIdx].D_801518E6 =
+                D_801518E4[attackerIdx].D_801518E8;
+            D_801518E4[targetIdx].D_80151922 |= 1;
+            D_80151200[targetIdx].D_8015120C |= 8;
+            D_800FA9C0 = targetIdx;
+        }
+    } else if (D_80163798[D_801590E0].unk1 == 3) {
+        D_801518E4[attackerIdx].D_8015190A = 1;
+    }
+
+    D_80162978[D_8015169C].state = -1;
+}
 
 static void func_800CF2F0(void) {
     s16 index;
@@ -1223,9 +1324,42 @@ s32 func_800D574C(s32 arg0) {
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D5774);
 
-void func_800D57C0();
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D57C0);
-void func_800D57C0(void);
+// Initial (non-matching) decomp. The attack-windup timer: `tick_count`
+// counts up (via the caller's own per-frame tick, not shown here) until it
+// reaches `delay`; from then on, `preset_idx` is reused as a stagger
+// interval -- only every `preset_idx`-th call past that point does
+// anything else. When it does: `target_battler_idx` is reused as a
+// bitmask of remaining targets, `state` as the scan cursor into it. Finds
+// the lowest set bit at/after the cursor, writes that bit index into
+// whatever func_800D4FA8(4) returns a pointer to, clears the bit, and
+// frees the slot (`state = -1`) once the mask is empty.
+extern s16* func_800D4FA8(s32 category);
+void func_800D57C0(void) {
+    BattleCallbackSlot* slot = &D_80162978[D_8015169C];
+    s16 sinceDelay;
+    s16 bit;
+
+    if (D_80062D98 != 0) {
+        return;
+    }
+
+    if (slot->tick_count >= slot->delay) {
+        sinceDelay = slot->tick_count - slot->delay;
+        if (sinceDelay % slot->preset_idx == 0) {
+            bit = slot->state;
+            while (!((slot->target_battler_idx >> bit) & 1)) {
+                bit++;
+            }
+            slot->state = bit;
+            *func_800D4FA8(4) = bit;
+            slot->target_battler_idx &= ~(1 << bit);
+            if (slot->target_battler_idx == 0) {
+                slot->state = -1;
+            }
+        }
+    }
+    slot->tick_count++;
+}
 
 // Also called from func_800CDF6C(arg0, 1, 1).
 void func_800D58D0(s16 arg0, s16 arg1, s16 arg2) {

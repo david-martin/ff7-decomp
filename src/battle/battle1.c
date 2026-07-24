@@ -220,7 +220,33 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B54B8);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B588C);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B5AAC);
+// "Restore normal appearance" -- resets a battler's model position/scale
+// and a handful of Unk80151200 timers/flags back to defaults, and zeroes
+// each BattleModelSub's sv2.vy (count from BattleModel.unk10). Called by
+// func_800C33F0 once doDeathSequence's fade finishes. arg1/arg2 are read
+// by callers (func_800C33F0 passes targetIdx and a slot byte-offset) but
+// never referenced in this function body -- genuinely dead arguments, not
+// a mistake in this trace (same situation as func_800A3534's arg0).
+// Initial decomp (m2c + manual cleanup) -- NOT byte-matched yet.
+void func_800B5AAC(s32 battlerIdx, s16 arg1, s32 arg2) {
+    s32 idx = battlerIdx & 0xFF;
+    s32 i;
+
+    D_801518E4[idx].D_80151A4C.vx = D_80163C80[idx].vx;
+    D_801518E4[idx].D_80151A4C.vy = D_80163C80[idx].vy;
+    D_801518E4[idx].D_801518EA = 0x1000;
+    D_801518E4[idx].D_80151A4C.vz = D_80163C80[idx].vz;
+
+    D_80151200[idx].D_8015123C = 0x1000;
+    D_80151200[idx].D_8015123A = 0x1000;
+    D_80151200[idx].D_80151238 = 0x1000;
+    D_80151200[idx].D_8015120C = 0;
+    D_80151200[idx].D_80151200 = 0;
+
+    for (i = 0; i < D_801518E4[idx].unk10; i++) {
+        D_801518E4[idx].D_80151A58[i].sv2.vy = 0;
+    }
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B5C1C);
 
@@ -233,7 +259,21 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B5E64);
 void func_800B60E0(s16);
 void func_800B5FC4(s16 arg0) { func_800B60E0(arg0); }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B5FE8);
+// Sets a "dirty/flash" bit (0x8) across a variable-length run of per-part
+// flag bytes for a battler's main model (count from BattleModel.unk10,
+// bytes starting right after the named field D_80151923) and, separately,
+// for its D_800FA6D8 sub-model (count from .unk3C, bytes in .unk3E[]).
+// Initial decomp (m2c + manual cleanup) -- NOT byte-matched yet.
+void func_800B5FE8(s16 battlerIdx) {
+    s32 i;
+
+    for (i = 0; i < D_801518E4[battlerIdx].unk10; i++) {
+        (&D_801518E4[battlerIdx].D_80151923)[i] |= 8;
+    }
+    for (i = 0; i < D_800FA6D8[battlerIdx].unk3C; i++) {
+        D_800FA6D8[battlerIdx].unk3E[i] |= 8;
+    }
+}
 
 void func_800B60E0(s16);
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B60E0);
@@ -254,10 +294,13 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B6B98);
 //   2 func_800C5C18(4 entry fields), immediate -- shape matches a sound cue
 //   3 gated on D_800F7DE4: same linked-list shape as case 1, opposite flag
 //     direction -- looks like "show next status icon"
-//   4 gated on D_800F7DE4: HP-counter tick-animation init -- writes to PS1
-//     scratchpad (0x1F800004/8), computes abs(diff)/entryField, stores
-//     start/target/increment into a D_80162978 slot (allocated via
-//     func_800BBEAC)
+//   4 gated on D_800F7DE4: constructs func_800C5694 (via func_800BBEAC) --
+//     a D_80162978 job that tweens D_801518E4[target].D_801518EA (a
+//     0x1000-scale fixed-point factor, confirmed elsewhere multiplied
+//     against D_80151A4C.vy -- a scale/blend factor, NOT curHP) from its
+//     current value toward this entry's target value over N ticks, one
+//     step per tick (preset_idx repurposed as the target battler index,
+//     tick_count repurposed as the per-tick increment)
 //   5 immediate: sets a per-actor "step complete" flag, conditionally
 //     copies animation-state fields
 // D_800F7DE4 (the gate for cases 1/3/4) is set once per frame by
@@ -967,25 +1010,261 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C2150);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C223C);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C2704);
+// Initial (non-matching) decomp. Draws one sprite glyph and prepends
+// {DR_MODE, SPRT} onto the ordering-table chain *tex points into (net
+// effect: *tex -> mode -> sprt -> whatever *tex pointed to before this
+// call), returning a pointer just past the SPRT primitive.
+DR_MODE* func_800C2704(u_long** tex, s16 x, s16 y, s16 arg3, s32 arg4, s32 arg5,
+                       s32 arg6, s32 arg7) {
+    DR_MODE* mode = D_80163C74;
+    SPRT* sprt = (SPRT*)((u8*)mode + 0xF0);
+
+    SetDrawMode(mode, 1, 0, 0x1F, NULL);
+    SetSprt(sprt);
+
+    sprt->clut = GetClut(0x100, (arg7 & 1) ? 0x1E4 : 0x1E7);
+    sprt->r0 = 0x80;
+    sprt->g0 = 0x80;
+    sprt->b0 = 0x80;
+    sprt->u0 = (u8)arg3;
+    sprt->v0 = (u8)arg4;
+    sprt->w = (s16)arg5;
+    sprt->h = (s16)arg6;
+    sprt->x0 = x;
+    sprt->y0 = y;
+
+    sprt->tag = (sprt->tag & 0xFF000000) | ((u32)*tex & 0xFFFFFF);
+    *tex = (u_long*)(((u32)*tex & 0xFF000000) | ((u32)sprt & 0xFFFFFF));
+    mode->tag = (mode->tag & 0xFF000000) | ((u32)*tex & 0xFFFFFF);
+    *tex = (u_long*)(((u32)*tex & 0xFF000000) | ((u32)mode & 0xFFFFFF));
+
+    return (DR_MODE*)((u8*)sprt + 0x14);
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C2864);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C2928);
+// Forward declarations for helpers this file's still-INCLUDE_ASM functions
+// don't otherwise expose a prototype for -- only needed for the initial
+// (non-matching) decomps below, so exact arg types are a best guess.
+extern u8 D_800EA230[];
+extern s32 D_800F8158;
+extern SVECTOR D_800E7D08;
+extern s16 D_800F4B14[]; // digit-glyph texture-column lookup, see func_800C2C1C
+void func_800C2C1C(s16 x, s16 y, s16 color, u8 digitCount, s32 value);
+void func_800BAF34(BattleModelSub* model);
+void func_800C2FD4(s32 battlerIdx, s32 soundId, u8 gate);
+void func_800B5FE8(s16 battlerIdx);
+void func_800C33F0(u8 slotIdx);
+s32 func_800C2F20(s16 color, s16* table, s32 arg2);
+void func_800B5AAC(s32 arg0, s16 arg1, s32 arg2);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C2C1C);
+// D_801621F0[60] pool job spawned by func_800CE970/CE7E0 (the damage-popup
+// family): positions and draws the floating damage-number sprite each tick.
+// unk10.ptr actually holds the target battler index (stored as a fake
+// pointer -- see func_800CE970's construction). Initial decomp (m2c +
+// manual cleanup of the array/field access) -- NOT byte-matched, offsets
+// past D_80151200[].D_80151240/D_80151260/D_80151268 are a best guess.
+//
+// Initial decomp only, not byte-matched yet.
+void func_800C2928(void) {
+    Unk801621F0* slot = &D_801621F0[D_801590D4];
+
+    switch (slot->D_801621F2) {
+    case 0: {
+        s32 targetIdx = (s32)slot->unk10.ptr;
+        u8 farColorIntensity = D_801518E4[targetIdx].D_8015190F;
+
+        slot->D_801621F2 = 1;
+        slot->D_801621F4 = 0xB;
+        slot->unkC = 0;
+
+        *(s32*)0x1F800000 = farColorIntensity; // GTE far-color register
+        func_800D3994(
+            targetIdx, farColorIntensity, &D_80151200[targetIdx].D_80151268);
+
+        // 3 raw halfword clears + a table-pointer store; exact sub-field
+        // split within D_80151260/D_80151264/D_80151270 not resolved yet.
+        *(s16*)((u8*)&D_80151200[targetIdx].D_80151264 + 0) = 0;
+        *(s16*)((u8*)&D_80151200[targetIdx].D_80151260 + 2) = 0;
+        D_80151200[targetIdx].D_80151260 = 0;
+        D_80151200[targetIdx].D_80151270 = (s32)&D_800F8158;
+        return;
+    }
+    case 1: {
+        s32 targetIdx;
+        s16 screenX, screenY;
+
+        if (slot->D_801621F4 == 0) {
+            slot->D_801621F0 = -1;
+            return;
+        }
+
+        targetIdx = (s32)slot->unk10.ptr;
+        RotMatrixYXZ((SVECTOR*)&D_80151200[targetIdx].D_80151260,
+                     (MATRIX*)&D_80151200[targetIdx].D_80151240);
+        func_800BAF34((BattleModelSub*)&D_80151200[targetIdx].D_80151240);
+        *(s32*)0x1F800010 = RotTransPers(&D_800E7D08, (long*)0x1F800004,
+                                         (long*)0x1F800008, (long*)0x1F80000C);
+
+        screenX = *(s16*)0x1F800004;
+        screenY = *(s16*)0x1F800006;
+        slot->D_801621F6 = screenX;
+        slot->unkA = screenY;
+        slot->unk8 = screenY - D_800EA230[slot->unkC];
+
+        if (slot->D_801621F6 < 0x18)
+            slot->D_801621F6 = 0x18;
+        if (slot->D_801621F6 >= 0x129)
+            slot->D_801621F6 = 0x128;
+        if (slot->unk8 < 0x10)
+            slot->unk8 = 0x10;
+        if (slot->unk8 >= 0x97)
+            slot->unk8 = 0x96;
+
+        func_800C2C1C(slot->D_801621F6, slot->unk8, slot->unkE,
+                      D_800EA230[slot->unkC], slot->unk14);
+        slot->unkC++;
+        slot->D_801621F4--;
+        return;
+    }
+    }
+}
+
+// D_801621F0[60] pool job's digit/icon drawing helper -- called by
+// func_800C2928 (which computes screen position) to actually draw the
+// floating damage-number sprite, or a special icon for a few sentinel
+// "color" values instead of a real color (-1/-2/-3, meaning unresolved --
+// candidates: miss/status icons). The color==-1/-2 branches genuinely only
+// set up 4 of func_800C2704's 8 args in the retail asm (the other 4 are
+// whatever's left in those registers) -- passed as 0 here instead, a
+// deliberate simplification, not a faithful reproduction of that quirk.
+// Initial decomp (m2c + manual cleanup) -- NOT byte-matched yet.
+void func_800C2C1C(s16 x, s16 y, s16 color, u8 digitCount, s32 value) {
+    Unk801621F0* slot = &D_801621F0[D_801590D4];
+    s32 numGlyphs;
+    s32 digitX;
+    s32 i;
+
+    // digitCount round-tripped through the GTE via func_800C2F20 -- ends up
+    // as the actual glyph count used below; unclear why the GTE is
+    // involved rather than using digitCount directly.
+    *(s32*)0x1F800008 = func_800C2F20(color, D_800F4B14, color << 0x10) & 0xFF;
+    numGlyphs = *(s32*)0x1F800008;
+
+    if (color == -2) {
+        D_80163C74 = func_800C2704(
+            &D_801517C0->unk4080[1], x - 0x10, slot->unk8, 0x20, 0, 0, 0, 0);
+        return;
+    }
+    if (color == -1) {
+        D_80163C74 = func_800C2704(
+            &D_801517C0->unk4080[1], x - 0xC, slot->unk8, 0x80, 0, 0, 0, 0);
+        return;
+    }
+    if (color == -3) {
+        D_80163C74 = func_800C2704(&D_801517C0->unk4080[1], x - 0x18,
+                                   slot->unk8, 0x20, 0xEA, 0x20, 0xA, value);
+        D_80163C74 = func_800C2704(&D_801517C0->unk4080[1], x + 8, slot->unk8,
+                                   0x20, 0xF4, 0x12, 0xA, value);
+        return;
+    }
+    if (color < -1) {
+        return; // no other negative color does anything
+    }
+
+    // color >= 0: draw the numeric value, digit by digit, right to left
+    if (value & 4) {
+        // an extra glyph, meaning unresolved -- sign? critical-hit marker?
+        D_80163C74 =
+            func_800C2704(&D_801517C0->unk4080[1], x + numGlyphs * 4 + 1,
+                          slot->unk8 + 6, 0x80, 0x93, 0xF, 5, value);
+    }
+    digitX = numGlyphs * 4 - 8;
+    for (i = 0; i < numGlyphs; i++) {
+        D_80163C74 =
+            func_800C2704(&D_801517C0->unk4080[1], x + digitX, slot->unk8,
+                          D_800F4B14[3 - i], 0x88, 8, 0xB, value);
+        digitX -= 9;
+    }
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C2F20);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C2FD4);
+// Queues an SFX (fixed id 0x2A) gated on `gate`, panned by the battler's
+// position (D_801516FC). Matches the earlier live/static trace exactly.
+// Initial decomp (m2c did almost all the work here) -- NOT byte-matched.
+void func_800C2FD4(s32 battlerIdx, s32 soundId, u8 gate) {
+    if (gate & 0xFF) {
+        D_8009A000[0] = 0x2A;
+        D_8009A008[0] = (s16)soundId;
+        D_8009A004[0] = ((D_801516FC[battlerIdx & 0xFF][0] / 5) * 2) & 0x7E;
+        func_8002DA7C();
+    }
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C3068);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C328C);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C33F0);
+// Shared per-tick "fade and eventually free" helper for the doDeathSequence
+// family (and presumably its siblings) -- called every tick from the
+// steady-state case. While delay counts down: ramps the blend-intensity
+// field up (+0x80/tick) and fades the tint byte down (-0x10/tick, via
+// signed-byte wraparound). Once delay hits 0: frees the D_80162978 slot,
+// clears the "tint active" bit, sets the "settled" byte, and calls
+// func_800B5AAC (a "restore normal appearance" refresh, unconfirmed).
+// Initial decomp (m2c + manual cleanup) -- NOT byte-matched yet.
+void func_800C33F0(u8 slotIdx) {
+    BattleCallbackSlot* slot = &D_80162978[slotIdx];
+    s16 targetIdx = slot->target_battler_idx;
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C3578);
+    if (slot->delay == 0) {
+        slot->state = -1;
+        D_801518E4[targetIdx].D_80151909 &= 0x7F;
+        D_80151200[targetIdx].D_8015120C &= 0xFFDF;
+        D_801518E4[targetIdx].D_8015190A = 1;
+        func_800B5AAC(targetIdx, targetIdx, (s32)slotIdx << 5);
+        return;
+    }
+
+    D_801518E4[targetIdx].unk14[0] += 0x80;
+    D_801518E4[targetIdx].D_8015190C +=
+        0xF0; // signed-byte wraparound == -= 0x10
+    slot->delay--;
+}
+
+// Effect type 0's dedicated per-frame job -- live-confirmed this session
+// (via the Callback Breakpoint Inspector): fires when a battler's HP hits
+// 0 via damage (func_800CE21C -> this, NOT a "Death" status spell/curse --
+// that path never triggered this), and drives the ~14-tick fade-to-
+// transparent/disappear sequence you see on a killed battler.
+//
+// Initial decomp (m2c + manual cleanup), renamed for readability while
+// inspecting it -- NOT byte-matched yet (was func_800C3578).
+void doDeathSequence(void) {
+    BattleCallbackSlot* slot = &D_80162978[D_8015169C];
+
+    switch (slot->tick_count) {
+    case 0: {
+        s16 targetIdx = slot->target_battler_idx;
+        u8 presetByte = *(u8*)&slot->preset_idx; // low byte only
+
+        slot->delay = 14;
+        slot->tick_count++;
+        func_800C2FD4(targetIdx & 0xFF, 0x16, presetByte);
+
+        D_801518E4[targetIdx].D_8015190C = 0xF8; // SetFarColor R
+        D_801518E4[targetIdx].D_8015190D = 0;    // SetFarColor G
+        D_801518E4[targetIdx].D_8015190E = 0;    // SetFarColor B
+        D_801518E4[targetIdx].unk14[0] = 0x800;
+
+        func_800B5FE8(targetIdx);
+    } // fallthrough
+    case 1:
+        func_800C33F0((u8)D_8015169C);
+        return;
+    }
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C36B4);
 

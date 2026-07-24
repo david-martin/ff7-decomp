@@ -1,0 +1,544 @@
+barret attacks enemy
+
+[f232820] func_800D58D0  (constructs func_800D57C0)
+  a0 (target_battler_idx) = 32 (0x20)
+  a1 (delay) = 6 (0x6)
+  a2 (preset_idx) = 1 (0x1)
+
+
+[f235677] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      0 (0x0000)
+  +0x04 delay              =      6 (0x0006)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =     32 (0x0020)
+  +0x0A damage_dealt       =    153 (0x0099)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f236974] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      6 (0x0006)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =     32 (0x0020)
+  +0x0A damage_dealt       =    153 (0x0099)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f237541] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      2 (0x0002)
+  +0x04 delay              =      6 (0x0006)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =     32 (0x0020)
+  +0x0A damage_dealt       =    153 (0x0099)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f238088] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      3 (0x0003)
+  +0x04 delay              =      6 (0x0006)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =     32 (0x0020)
+  +0x0A damage_dealt       =    153 (0x0099)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f238607] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      4 (0x0004)
+  +0x04 delay              =      6 (0x0006)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =     32 (0x0020)
+  +0x0A damage_dealt       =    153 (0x0099)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f239108] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      5 (0x0005)
+  +0x04 delay              =      6 (0x0006)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =     32 (0x0020)
+  +0x0A damage_dealt       =    153 (0x0099)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f239616] func_800D57C0 (func_800D58D0 bitmask-dispatch family)  (slot=0)
+slot=0  owner=[func_800D57C0 (func_800D58D0 bitmask-dispatch family)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      6 (0x0006)
+  +0x04 delay              =      6 (0x0006)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =     32 (0x0020)
+  +0x0A damage_dealt       =    153 (0x0099)
+  +0x0C unk8               =      6 (0x0006)
+  +0x0E unkA               =      0 (0x0000)
+  +0x10 unkC               =    226 (0x00e2)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     18 (0x0012)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f240240] func_800B88CC  (constructs func_800CE970)
+  a0 (battler_idx) = 5 (0x5)
+
+[f240878] func_800CE970 (damage popup, via func_800B88CC)  (slot=0)
+slot=0  owner=[func_800CE970 (damage popup, via func_800B88CC)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      0 (0x0000)
+  +0x04 delay              =      0 (0x0000)
+  +0x06 preset_idx         =     31 (0x001f)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+after 6707 shows up on screen and enemy has started to disappear (red transparent)
+
+[f241527] func_800CE21C  (constructs status-effect (switch on D_801636B8[battler]))
+  a0 (battler_idx) = 5 (0x5)
+  a1 (preset_idx) = 1 (0x1)
+
+[f243763] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      0 (0x0000)
+  +0x04 delay              =      0 (0x0000)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f244346] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =     13 (0x000d)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f244760] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =     12 (0x000c)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f245345] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =     11 (0x000b)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f245804] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =     10 (0x000a)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f246282] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      9 (0x0009)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f246967] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      8 (0x0008)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+(enemy almost disappeared, but still partially visible red transparent. damage gone off screen by now, maybe a few framews ago?)
+[f249934] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      7 (0x0007)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f250733] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      6 (0x0006)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f251303] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      5 (0x0005)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f251724] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      4 (0x0004)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f252207] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      3 (0x0003)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f252725] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      2 (0x0002)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f253270] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      1 (0x0001)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+[f254544] func_800C3578 (status-effect type 0)  (slot=0)
+slot=0  owner=[func_800C3578 (status-effect type 0)]
+  +0x00 state              =      0 (0x0000)
+  +0x02 tick_count         =      1 (0x0001)
+  +0x04 delay              =      0 (0x0000)
+  +0x06 preset_idx         =      1 (0x0001)
+  +0x08 target_battler_idx =      5 (0x0005)
+  +0x0A damage_dealt       =   6707 (0x1a33)
+  +0x0C unk8               =      1 (0x0001)
+  +0x0E unkA               =      2 (0x0002)
+  +0x10 unkC               =    485 (0x01e5)
+  +0x12 unkE               =      0 (0x0000)
+  +0x14 unk10              =     46 (0x002e)
+  +0x16 unk12              =      0 (0x0000)
+  +0x18 unk14              =      0 (0x0000)
+  +0x19 unk15              =      0 (0x0000)
+  +0x1A unk16              =      0 (0x0000)
+  +0x1C unk18              =      0 (0x0000)
+  +0x1E unk1A              =      0 (0x0000)
+
+(enemy gone off screen)
+
+[BREAK] func_800D58D0 fired at frame 232820 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f235676] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [none] -> [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f235676] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] delay: 0 -> 6 (target=32) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f235676] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] preset_idx: 30 -> 1 (target=32) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f235676] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] target_battler_idx: 1 -> 32 | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 235677 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f236971] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] tick_count: 0 -> 1 (target=32) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 236974 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f237538] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] tick_count: 1 -> 2 (target=32) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 237541 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f238085] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] tick_count: 2 -> 3 (target=32) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 238088 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f238604] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] tick_count: 3 -> 4 (target=32) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 238607 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f239105] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] tick_count: 4 -> 5 (target=32) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 239108 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f239613] slot=0 [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] tick_count: 5 -> 6 (target=32) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800D57C0 (func_800D58D0 bitmask-dispatch family) fired at frame 239616 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f240237] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [func_800D57C0 (func_800D58D0 bitmask-dispatch family)] -> [none] | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f240237] slot=0 [none] tick_count: 6 -> 0 (target=0) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f240237] slot=0 [none] target_battler_idx: 32 -> 0 | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800B88CC fired at frame 240240 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[BREAK] func_800CE970 (damage popup, via func_800B88CC) fired at frame 240878 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f240879] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [none] -> [func_800CE970 (damage popup, via func_800B88CC)] | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f240879] slot=0 [func_800CE970 (damage popup, via func_800B88CC)] delay: 6 -> 0 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f240879] slot=0 [func_800CE970 (damage popup, via func_800B88CC)] preset_idx: 1 -> 31 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f240879] slot=0 [func_800CE970 (damage popup, via func_800B88CC)] damage_dealt: 153 -> 6707 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f240879] slot=0 [func_800CE970 (damage popup, via func_800B88CC)] target_battler_idx: 0 -> 5 | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f241490] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [func_800CE970 (damage popup, via func_800B88CC)] -> [none] | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800CE21C fired at frame 241527 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f243761] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [none] -> [func_800C3578 (status-effect type 0)] | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f243761] slot=0 [func_800C3578 (status-effect type 0)] preset_idx: 31 -> 1 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 243763 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f244344] slot=0 [func_800C3578 (status-effect type 0)] delay: 0 -> 13 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f244344] slot=0 [func_800C3578 (status-effect type 0)] tick_count: 0 -> 1 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 244346 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f244757] slot=0 [func_800C3578 (status-effect type 0)] delay: 13 -> 12 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 244760 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f245342] slot=0 [func_800C3578 (status-effect type 0)] delay: 12 -> 11 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 245345 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f245801] slot=0 [func_800C3578 (status-effect type 0)] delay: 11 -> 10 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 245804 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f246279] slot=0 [func_800C3578 (status-effect type 0)] delay: 10 -> 9 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 246282 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f246964] slot=0 [func_800C3578 (status-effect type 0)] delay: 9 -> 8 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 246967 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f249931] slot=0 [func_800C3578 (status-effect type 0)] delay: 8 -> 7 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 249934 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f250730] slot=0 [func_800C3578 (status-effect type 0)] delay: 7 -> 6 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 250733 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f251300] slot=0 [func_800C3578 (status-effect type 0)] delay: 6 -> 5 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 251303 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f251721] slot=0 [func_800C3578 (status-effect type 0)] delay: 5 -> 4 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 251724 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f252204] slot=0 [func_800C3578 (status-effect type 0)] delay: 4 -> 3 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 252207 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f252722] slot=0 [func_800C3578 (status-effect type 0)] delay: 3 -> 2 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 252725 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f253267] slot=0 [func_800C3578 (status-effect type 0)] delay: 2 -> 1 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 253270 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f254541] slot=0 [func_800C3578 (status-effect type 0)] delay: 1 -> 0 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[BREAK] func_800C3578 (status-effect type 0) fired at frame 254544 -- see "Callback Breakpoint Inspector", then Continue/Step to resume 
+[f255233] slot=0 CALLBACK CHANGED (missed alloc/free within one frame): [func_800C3578 (status-effect type 0)] -> [none] | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 
+[f255233] slot=0 [none] tick_count: 1 -> 0 (target=5) | HP[0:7505/9269 1:4785/9044 2:1288/8723 4:0/2000(dead) 5:0/2000(dead) 6:2000/2000] 

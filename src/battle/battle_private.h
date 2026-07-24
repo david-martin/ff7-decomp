@@ -29,7 +29,27 @@ typedef struct {
     s32 unk20;
     s32 unk24;
     s8 unk28;
-    s8 unk29;
+    s8 unk29; // per-battler one-shot flag bits, several confirmed, no single
+              // name fits (see D_80162978_INVESTIGATION.md "Sneak Attack" /
+              // "Real damage application" sections for full traces):
+              // 0x2 -- set by func_801B08C0 (battle setup) when the
+              //   battler's weapon-config byte (D_800F5EFC[i*0x18] byte 0)
+              //   lacks bit 0x20; cleared by func_801B11BC as part of its
+              //   category-7 support-materia gate (Sneak-Attack-candidate,
+              //   not confirmed as the real materia)
+              // 0x4 -- tested/cleared once per command by func_800A1798
+              //   (fires message 0x7A via func_800B0FFC); setter unknown
+              // 0x10 -- battler-eligible-for-death-sequence-style dispatch
+              //   flag (see func_800A44D8-area usage)
+              // 0x20 -- set by func_800A6278 ("this battler was affected by
+              //   an event" bookkeeping), increments D_800F5E60[i].unk7
+              // 0x80 -- "already announced curHP==7777 this battle" latch,
+              //   set by func_800A2894, cleared+consumed by func_800A1798;
+              //   matches the community-documented "All Lucky 7s" status
+              //   (finalfantasy.fandom.com: "causes all their attacks to
+              //   automatically deal 7777 damage") -- curHP==0x1E61 (7777)
+              //   is the code's own trigger condition, independently
+              //   corroborating the wiki name
     s16 unk2A;
     s32 unk2C;
     s32 unk30;
