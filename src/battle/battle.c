@@ -1878,12 +1878,12 @@ void func_800ADF38(void) {
 }
 
 void func_800ADFC0(void) {
-    D_80063014->unk214 = *(u16*)(&D_800F5BB8[D_80063014->unk0].unk3C);
+    D_80063014->unk214 = D_800F5BB8[D_80063014->unk0].curHP;
 }
 
 void func_800ADFF4(void) {
     s32 index = D_80063014->unk0;
-    D_80063014->unk214 = D_800F83E0[index].maxHP - D_800F5BB8[index].unk3C;
+    D_80063014->unk214 = D_800F83E0[index].maxHP - D_800F5BB8[index].curHP;
 }
 
 void func_800AE050(void) {}
