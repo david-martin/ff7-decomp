@@ -748,18 +748,14 @@ INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_80018D4C);
 INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_80018E18);
 
 void func_80018E90(void) {
-    s32 var_a1;
-    s32 var_a2;
-    Unk80062E60* temp_v1;
+    s32 i;
+    s32 off;
+    Unk80062E60* entry;
 
-    var_a2 = 0;
-    var_a1 = 0x1C0;
-    do {
-        var_a2 += 1;
-        temp_v1 = (Unk80062E60*)((u8*)D_80062E60 + var_a1);
-        temp_v1->unk10F = (u8)(temp_v1->unk10F | D_80062E78);
-        var_a1 += 8;
-    } while (var_a2 < 0x10);
+    for (i = 0, off = 0x1C0; i < 0x10; i++, off += 8) {
+        entry = (Unk80062E60*)((u8*)D_80062E60 + off);
+        entry->unk10F |= D_80062E78;
+    }
 }
 
 INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_80018ECC);
@@ -814,7 +810,7 @@ extern s8 D_80062FFC = 0; // %gp
 extern u8 D_80063020 = 0; // %gp
 void func_80019E4C(void) {
     if (D_80063020 == 0) {
-        D_80062E60->unk23 = (u8)(D_80062E60->unk23 | 4);
+        D_80062E60->unk23 |= 4;
         return;
     }
     D_80062FFC = 0x12;
