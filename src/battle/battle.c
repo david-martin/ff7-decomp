@@ -607,6 +607,9 @@ void func_800A56B0(s16 arg0) {
     var_t0 = 0;
     var_a1 = D_800F3A42;
     var_a2 = D_800F3A42 - 1;
+    // load-bearing register-allocation scaffolding (m2c artifact of an
+    // uninitialized read) -- tested clean removal, regresses (34/41 words),
+    // keep raw
     if (temp_v0_2) {
         if ((D_800F3A1C && D_800F3A1C) && D_800F3A1C) {
         }
@@ -726,13 +729,13 @@ void func_800A653C(s32 arg0) {
 
 void func_800A6590(s32 arg0) { func_800A4D88(arg0); }
 
-extern u16 D_8009D866;
+extern u16 D_8009D866[]; // record field, stride 0x440
 extern u16 D_80163762;
 
 void func_800A65B0(s32 arg0, s32 arg1) {
     if (arg0 < 3) {
         func_800A4F14(arg0);
-        *(u16*)((u8*)&D_8009D866 + (arg0 * 0x440)) = 0;
+        D_8009D866[arg0 * 0x220] = 0;
         {
             u16* p = &D_80163762;
             *p &= ~(1 << arg0);
