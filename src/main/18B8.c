@@ -1198,18 +1198,7 @@ void func_8001DE40(Unk8001DE0C* arg0, Unk8001DE0C* arg1) {
 
 INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_8001DE70);
 
-#ifndef NON_MATCHINGS
 INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_8001DEB0);
-#else
-// only matches with --aspsx-version=2.21
-extern u8 D_800696F0[12];
-void func_8001DEB0(void) {
-    s32 i;
-    for (i = 0; i < 0xC; i++) {
-        D_80049208[i] = D_800696F0[i];
-    }
-}
-#endif
 
 #ifndef NON_MATCHINGS
 INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_8001DEF0);
@@ -1350,18 +1339,7 @@ INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_8001FCDC);
 
 INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_8001FE6C);
 
-#ifndef NON_MATCHINGS
 INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_8001FF50);
-#else
-// only matches with --aspsx-version=2.21
-extern u8 D_8009D888[];
-void func_8001FF50(s32 arg0, s32 arg1) {
-    s32 off;
-
-    off = arg0 * 0x440;
-    *(u16*)(D_8009D888 + off) |= arg1;
-}
-#endif
 
 INCLUDE_ASM("asm/us/main/nonmatchings/18B8", func_8001FF8C);
 
