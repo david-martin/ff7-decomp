@@ -424,6 +424,13 @@ typedef struct {
 } Unk80062F7C;
 
 typedef struct {
+    /* 000 */ u8 pad0[0x23];
+    /* 023 */ u8 unk23;
+    /* 024 */ u8 pad24[0x10F - 0x24];
+    /* 10F */ u8 unk10F;
+} Unk80062E60; // size: 0x110
+
+typedef struct {
     /* 0x00 */ LinePos pos;
     /* 0x0C */ u8 isActive;
     /* 0x0D */ u8 entityId;
