@@ -14,7 +14,7 @@ typedef struct BarrierData {
     char pad1[0x6];
 } BarrierData;
 
-extern BarrierData D_80162978[];
+extern BarrierData g_BattleCallbackPool[];
 
 static s32 D_801B0B68[] = { // this seems to be a header+3D model
     0x00000030, 0xFE0C0000, 0x000001CA, 0x00000000, 0x0000FFD7, 0x0000FE0C,
@@ -47,7 +47,7 @@ void func_801B0000(int arg0, int arg1) { func_801B0AF0(arg0, arg1); }
 static void func_801B0020(void) {
     MATRIX* matrix = (MATRIX*)0x1F800000;
     VECTOR* scale = (VECTOR*)0x1F800020;
-    BarrierData* data = &D_80162978[D_8015169C];
+    BarrierData* data = &g_BattleCallbackPool[D_8015169C];
     int temp_a0 = (data->unk2 + data->unk0) - 17;
     int var_s4;
     int var_s3;
@@ -93,7 +93,7 @@ static void func_801B0220(void) {
     MATRIX* matrix2 = (MATRIX*)0x1F800020;
     VECTOR* scale1 = (VECTOR*)0x1F800040;
     VECTOR* scale2 = (VECTOR*)0x1F800050;
-    BarrierData* data = &D_80162978[D_8015169C];
+    BarrierData* data = &g_BattleCallbackPool[D_8015169C];
     int temp_a0 = data->unk2 + data->unk0 - 17;
     int var_s5;
     int var_s6;
@@ -143,7 +143,7 @@ static void func_801B0220(void) {
 }
 
 static void func_801B04F4(void) {
-    BarrierData* data = &D_80162978[D_8015169C];
+    BarrierData* data = &g_BattleCallbackPool[D_8015169C];
     BarrierData* next;
 
     if (D_80062D98 != 0) {
@@ -151,7 +151,7 @@ static void func_801B04F4(void) {
     }
 
     if (data->unk2 == 0) {
-        next = &D_80162978[func_800BBEAC(func_801B0020)];
+        next = &g_BattleCallbackPool[BATTLE_AllocCallbackSlot(func_801B0020)];
         next->unk0 = data->unk2;
         next->unk18 = 0;
         next->rot = data->rot;
@@ -159,7 +159,7 @@ static void func_801B04F4(void) {
     }
 
     if (data->unk2 == 2) {
-        next = &D_80162978[func_800BBEAC(func_801B0020)];
+        next = &g_BattleCallbackPool[BATTLE_AllocCallbackSlot(func_801B0020)];
         next->unk0 = data->unk2;
         next->unk18 = 1;
         next->rot = data->rot;
@@ -167,7 +167,7 @@ static void func_801B04F4(void) {
     }
 
     if (data->unk2 == 4) {
-        next = &D_80162978[func_800BBEAC(func_801B0020)];
+        next = &g_BattleCallbackPool[BATTLE_AllocCallbackSlot(func_801B0020)];
         next->unk0 = data->unk2;
         next->unk18 = 3;
         next->rot = data->rot;
@@ -175,7 +175,7 @@ static void func_801B04F4(void) {
     }
 
     if (data->unk2 == 6) {
-        next = &D_80162978[func_800BBEAC(func_801B0020)];
+        next = &g_BattleCallbackPool[BATTLE_AllocCallbackSlot(func_801B0020)];
         next->unk0 = data->unk2;
         next->unk18 = 2;
         next->rot = data->rot;
@@ -183,7 +183,7 @@ static void func_801B04F4(void) {
     }
 
     if (data->unk2 == 1) {
-        next = &D_80162978[func_800BBEAC(func_801B0220)];
+        next = &g_BattleCallbackPool[BATTLE_AllocCallbackSlot(func_801B0220)];
         next->unk0 = data->unk2;
         next->unk18 = 0;
         next->rot = data->rot;
@@ -191,7 +191,7 @@ static void func_801B04F4(void) {
     }
 
     if (data->unk2 == 3) {
-        next = &D_80162978[func_800BBEAC(func_801B0220)];
+        next = &g_BattleCallbackPool[BATTLE_AllocCallbackSlot(func_801B0220)];
         next->unk0 = data->unk2;
         next->unk18 = 1;
         next->rot = data->rot;
@@ -199,7 +199,7 @@ static void func_801B04F4(void) {
     }
 
     if (data->unk2 == 5) {
-        next = &D_80162978[func_800BBEAC(func_801B0220)];
+        next = &g_BattleCallbackPool[BATTLE_AllocCallbackSlot(func_801B0220)];
         next->unk0 = data->unk2;
         next->unk18 = 3;
         next->rot = data->rot;
@@ -207,7 +207,7 @@ static void func_801B04F4(void) {
     }
 
     if (data->unk2 == 7) {
-        next = &D_80162978[func_800BBEAC(func_801B0220)];
+        next = &g_BattleCallbackPool[BATTLE_AllocCallbackSlot(func_801B0220)];
         next->unk0 = data->unk2;
         next->unk18 = 2;
         next->rot = data->rot;
@@ -223,19 +223,22 @@ static void func_801B04F4(void) {
 }
 
 static void func_801B092C(int arg0) {
-    BarrierData* data = &D_80162978[func_800BBEAC(func_801B04F4)];
+    BarrierData* data =
+        &g_BattleCallbackPool[BATTLE_AllocCallbackSlot(func_801B04F4)];
 
-    func_800D3994(arg0, D_801518E4[arg0].D_8015190F, &data->pos);
+    func_800D3994(arg0, g_BattleModels[arg0].D_8015190F, &data->pos);
     data->pos.vx -=
-        (rsin(D_801518E4[arg0].unk160.vy) * D_801518E4[arg0].unk12) >> 12;
+        (rsin(g_BattleModels[arg0].unk160.vy) * g_BattleModels[arg0].unk12) >>
+        12;
     data->pos.vz -=
-        (rcos(D_801518E4[arg0].unk160.vy) * D_801518E4[arg0].unk12) >> 12;
-    data->rot = D_801518E4[arg0].unk160;
+        (rcos(g_BattleModels[arg0].unk160.vy) * g_BattleModels[arg0].unk12) >>
+        12;
+    data->rot = g_BattleModels[arg0].unk160;
     data->unk4 = arg0;
 }
 
 static void func_801B0A90(void) {
-    BarrierData* data = &D_80162978[D_8015169C];
+    BarrierData* data = &g_BattleCallbackPool[D_8015169C];
 
     D_801D0CC4 = &D_801B0CC4[data->unk2 * 65536];
     data->unk2 ^= 1;
@@ -247,7 +250,7 @@ static void func_801B0A90(void) {
 
 static void func_801B0AF0(int arg0, int arg1) {
     D_801B0CC0 = 0x3000;
-    func_800BBEAC(func_801B0A90);
+    BATTLE_AllocCallbackSlot(func_801B0A90);
     func_800D5444(arg0, arg1, 4, func_801B092C);
     func_800D55F4(32, func_800D574C(arg0), 94);
 }

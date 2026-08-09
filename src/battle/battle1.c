@@ -11,7 +11,7 @@ static void func_800B3D88(void);
 static void func_800B3DBC(void);
 static s32 func_800B3FAC(s32 arg0);
 static void func_800B798C(void);
-static void func_800B7FDC(void);
+static void BATTLE_MainLoop(void);
 static void func_800B8360(s32);
 static void func_800B85E0();
 static void func_800B88CC(s32 arg0);
@@ -54,8 +54,8 @@ void func_800B30E4(void) {
     func_800B3E2C();
     func_800BB684();
     func_800BC04C(func_800C4D10);
-    func_800B7FDC();
-    func_800B7FDC();
+    BATTLE_MainLoop();
+    BATTLE_MainLoop();
     do {
     } while (D_80095DD4);
     func_800B37EC();
@@ -65,11 +65,11 @@ void func_800B30E4(void) {
         case 0:
             D_801635FC = 0x3D;
             func_800B38E0();
-            func_800B7FDC();
+            BATTLE_MainLoop();
             D_80163C7C = 1;
             break;
         case 1:
-            func_800B7FDC();
+            BATTLE_MainLoop();
             if (D_800F7DF4 == (u8)D_80166F64 && D_801518DC == 0) {
                 func_800B3D38();
                 func_800B5138();
@@ -77,25 +77,25 @@ void func_800B30E4(void) {
             }
             break;
         case 6:
-            func_800B7FDC();
+            BATTLE_MainLoop();
             func_800B3D88();
             for (i = 4; i < D_800F7E04[0] + 4; i++) {
-                D_801518E4[i].D_80151922 |= 4;
+                g_BattleModels[i].D_80151922 |= 4;
             }
             D_80163C7C = 2;
             break;
         case 2:
-            func_800B7FDC();
+            BATTLE_MainLoop();
             if ((u8)D_80166F64 == 3 && D_801518DC == 0) {
                 func_800B3DBC();
                 D_80163C7C = 3;
-                D_801518E4[0].D_80151922 |= 4;
-                D_801518E4[1].D_80151922 |= 4;
-                D_801518E4[2].D_80151922 |= 4;
+                g_BattleModels[0].D_80151922 |= 4;
+                g_BattleModels[1].D_80151922 |= 4;
+                g_BattleModels[2].D_80151922 |= 4;
             }
             break;
         case 3:
-            func_800B7FDC();
+            BATTLE_MainLoop();
             if (D_801635FC == 0) {
                 D_80163C7C = 4;
                 func_800C61C0();
@@ -245,7 +245,7 @@ static void func_800B3DBC(void) {
     func_800B6B98(3, 3);
     if (D_8016360C.setup.stageID == 57) {
         for (i = 0; i < 10; i++) {
-            D_801518E4[i].D_80151909 |= 0x10;
+            g_BattleModels[i].D_80151909 |= 0x10;
         }
     }
 }
@@ -277,14 +277,14 @@ static void func_800B3E2C(void) {
     D_80166F58 = 0;
     D_801516A0 = 0;
     D_800F8380 = 0;
-    for (i = 0; i < LEN(D_801518E4); i++) {
-        D_801518E4[i].D_8015190A = 1;
+    for (i = 0; i < LEN(g_BattleModels); i++) {
+        g_BattleModels[i].D_8015190A = 1;
     }
     for (i = 2; i >= 0; i--) {
         D_800F9F28[i] = 0;
     }
     var_a0 = D_801590CC;
-    D_801518E4[var_a0].D_80151906 = 0;
+    g_BattleModels[var_a0].D_80151906 = 0;
     D_800F8374 = 0xE;
     D_80163798[D_801590E0].unk8 = -2;
     func_800BC1E0(var_a0);
@@ -326,7 +326,7 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B54B8);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B588C);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B5AAC);
+INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", BATTLE_ResetModelAfterDeath);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B5C1C);
 
@@ -354,7 +354,7 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B6B98);
 // entry per call, dispatched by a type byte (0-5, jtbl_800A05FC) via m2c
 // structural read (not yet decompiled):
 //   0 callback-driven step (func_800BC04C(&func_800C494C)), immediate
-//   1 gated on D_800F7DE4: walks a linked status list (D_800FA9D0/1/2),
+//   1 gated on D_800F7DE4: walks a linked status list (g_ActionResultRing/1/2),
 //     looks like "hide next status icon" (sets D_800FA6D4/D_80161EEC/
 //     D_800F99E8 icon slots, or 0xF when the list is exhausted)
 //   2 func_800C5C18(4 entry fields), immediate -- shape matches a sound cue
@@ -362,12 +362,12 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B6B98);
 //     direction -- looks like "show next status icon"
 //   4 gated on D_800F7DE4: HP-counter tick-animation init -- writes to PS1
 //     scratchpad (0x1F800004/8), computes abs(diff)/entryField, stores
-//     start/target/increment into a D_80162978 slot (allocated via
-//     func_800BBEAC)
+//     start/target/increment into a g_BattleCallbackPool slot (allocated via
+//     BATTLE_AllocCallbackSlot)
 //   5 immediate: sets a per-actor "step complete" flag, conditionally
 //     copies animation-state fields
 // D_800F7DE4 (the gate for cases 1/3/4) is set once per frame by
-// func_800B7FDC below, once all actor slots are ready -- so this function
+// BATTLE_MainLoop below, once all actor slots are ready -- so this function
 // is a generic "process the next queued visual/counter effect, one per
 // frame" drainer, not itself the source of any particular command's
 // damage/effect. See func_800A4AF4's comment in battle.c: opcode 0x14 just
@@ -405,12 +405,13 @@ static void func_800B7F6C(void) {
 void func_800B7FB4(void) { D_801518DC = SystemCdromReadChain(); }
 
 // per-frame tick: pumps the GPU ordering-table draw lists, runs render/vsync,
-// drains the action-queue ring buffer (func_800A3ED0 -- see the queue-push
-// writeup), and sets D_800F7DE4 = 1 exactly once per frame once every actor
-// slot is ready and D_80162080 (a per-frame counter) reaches 0. func_800B6D6C
-// gates several of its event-queue steps on this flag, effectively waiting
-// for "the next frame is ready" before consuming a queued effect
-static void func_800B7FDC(void) {
+// drains the action-queue ring buffer (BATTLE_DrainCommandRing -- see the
+// queue-push writeup), and sets D_800F7DE4 = 1 exactly once per frame once
+// every actor slot is ready and D_80162080 (a per-frame counter) reaches 0.
+// func_800B6D6C gates several of its event-queue steps on this flag,
+// effectively waiting for "the next frame is ready" before consuming a queued
+// effect
+static void BATTLE_MainLoop(void) {
     s32 i;
 
     func_800B7FB4();
@@ -426,7 +427,7 @@ static void func_800B7FDC(void) {
     func_800C5CC0();
     func_800B8438();
     for (i = 0; i < 10; i++) {
-        if (D_801518E4[i].D_8015190A == 0) {
+        if (g_BattleModels[i].D_8015190A == 0) {
             D_800F7DE4 = 0;
             break;
         }
@@ -436,7 +437,7 @@ static void func_800B7FDC(void) {
             D_800F7DE4 = 0;
         }
     }
-    func_800A3ED0();
+    BATTLE_DrainCommandRing();
     func_800B8360(2);
     func_800DCFD4((u_long*)g_cDb->unk40E4);
     if (D_800F9D94 == 0) {
@@ -475,10 +476,10 @@ static void func_800B8268(void) {
     while (i < 10) {
         *var_a1 = D_801636B8[i].D_801636B9;
         if (!(D_80151200[i].D_8015120C & 8) &&
-            D_801518E4[i].D_801518E6 != *var_a1 &&
-            D_801518E4[i].D_8015190A == var_t1) {
-            D_801518E4[i].D_80151922 |= 1;
-            D_801518E4[i].D_801518E6 = *var_a1;
+            g_BattleModels[i].D_801518E6 != *var_a1 &&
+            g_BattleModels[i].D_8015190A == var_t1) {
+            g_BattleModels[i].D_80151922 |= 1;
+            g_BattleModels[i].D_801518E6 = *var_a1;
         }
         var_a1++;
         i += 1;
@@ -538,12 +539,12 @@ void func_800B8438(void) {
     func_800B91CC();
     D_80151694 = D_80163758[1];
     func_800B85E0();
-    func_800BC81C(D_800F8370, D_801518E4[D_801590CC].D_80151906);
+    func_800BC81C(D_800F8370, g_BattleModels[D_801590CC].D_80151906);
     func_800BC8B0(D_800F8370);
     func_800B8268();
     SetFarColor(0, 0, 0);
     func_800BC538();
-    func_800BC348();
+    BATTLE_RunCallbackPool();
     func_800BB75C(&D_800FA63C, &D_800FA958, &D_80158D00, &D_801031E8);
     func_800C627C();
 }
@@ -559,7 +560,7 @@ static void func_800B85E0() {
         D_80163798[D_801590E0].unk8 = -3;
         func_800BB684();
         for (i = 0; i < 3; i++) {
-            D_801518E4[i].D_80151922 |= 0x20;
+            g_BattleModels[i].D_80151922 |= 0x20;
             D_80151200[i].D_80151200 = D_801636B8[i].D_801636C0;
         }
     }
@@ -578,9 +579,9 @@ static void func_800B85E0() {
         i = 0;
         if (D_800707BE & 8) {
             for (; i < 3; i++) {
-                D_801518E4[i].D_80151922 |= 1;
-                D_801518E4[i].D_801518E6 = D_801636B8[i].D_801636B9;
-                D_801518E4[i].D_80151922 |= 0x20;
+                g_BattleModels[i].D_80151922 |= 1;
+                g_BattleModels[i].D_801518E6 = D_801636B8[i].D_801636B9;
+                g_BattleModels[i].D_80151922 |= 0x20;
                 D_80151200[i].D_80151200 = D_801636B8[i].D_801636C0;
             }
             D_800F9D9C = 100;
@@ -604,13 +605,13 @@ s16 func_800B888C(s32 arg0) {
     }
 }
 
-// initialize D_80162978 slot v (registered via func_800BBEAC) from arg0 and
-// dispatch
+// initialize g_BattleCallbackPool slot v (registered via
+// BATTLE_AllocCallbackSlot) from arg0 and dispatch
 static void func_800B88CC(s32 arg0) {
-    s32 v = func_800BBEAC(&func_800CE970);
+    s32 v = BATTLE_AllocCallbackSlot(&func_800CE970);
 
-    D_80162978[v].D_8016297C = 0;
-    D_80162978[v].D_80162980 = arg0;
+    g_BattleCallbackPool[v].D_8016297C = 0;
+    g_BattleCallbackPool[v].D_80162980 = arg0;
     func_800B8A34(func_800B888C(arg0), v);
 }
 
@@ -624,8 +625,8 @@ static void func_800B8E48(s32 arg0) {
     s32 temp_a0;
 
     temp_a0 = arg0 & 0xFF;
-    D_801518E4[temp_a0].D_8015190A = 1;
-    D_801518E4[temp_a0].D_80151909 &= 0x7F;
+    g_BattleModels[temp_a0].D_8015190A = 1;
+    g_BattleModels[temp_a0].D_80151909 &= 0x7F;
     D_80151200[temp_a0].D_8015120C &= 0xFFDF;
 }
 
@@ -676,11 +677,11 @@ static void func_800BA40C(void) {
     u8 param;
 
     for (i = 0; i < 3; i++) {
-        if (!(D_801518E4[i].D_80151909 & 2)) {
+        if (!(g_BattleModels[i].D_80151909 & 2)) {
             param = i;
             func_800C1908(param);
             func_800BA598(i);
-            if (D_801518E4[i].D_8015190B & 0x80) {
+            if (g_BattleModels[i].D_8015190B & 0x80) {
                 func_800BB2A8(param);
                 func_800BB030(i);
             }
@@ -692,15 +693,15 @@ static void func_800BA4C8(void) {
     s32 i;
 
     for (i = 4; i < D_800F7E04[0] + 4; i++) {
-        if (!(D_801518E4[i].D_80151909 & 0x80)) {
+        if (!(g_BattleModels[i].D_80151909 & 0x80)) {
             continue;
         }
-        if (D_801518E4[i].D_80151909 & 2) {
+        if (g_BattleModels[i].D_80151909 & 2) {
             continue;
         }
         func_800C1908(i);
         func_800BA598(i);
-        if (D_801518E4[i].D_8015190B & 0x80) {
+        if (g_BattleModels[i].D_8015190B & 0x80) {
             func_800BB030(i);
         }
     }
@@ -734,10 +735,11 @@ static void func_800BB030(s16 arg0) {
     Unk801B0C98* unk;
 
     unk = (Unk801B0C98*)0x1F800020;
-    SetFarColor(D_801518E4[arg0].D_8015190C, D_801518E4[arg0].D_8015190D,
-                D_801518E4[arg0].D_8015190E);
-    SetRotMatrix(&D_801518E4[arg0].m);
-    SetTransMatrix(&D_801518E4[arg0].m);
+    SetFarColor(
+        g_BattleModels[arg0].D_8015190C, g_BattleModels[arg0].D_8015190D,
+        g_BattleModels[arg0].D_8015190E);
+    SetRotMatrix(&g_BattleModels[arg0].m);
+    SetTransMatrix(&g_BattleModels[arg0].m);
     for (i = 0; i < D_800FA6D8[arg0].unk3C; i++) {
         RotMatrixYXZ(
             &D_800FA6D8[arg0].unk8[i].sv1, &D_800FA6D8[arg0].unk8[i].m);
@@ -750,10 +752,10 @@ static void func_800BB030(s16 arg0) {
         unk->unk0 = D_800FA6D8[arg0].unk4[i];
         unk->unk4 = D_800FA6D8[arg0].unk3E[i] | 0x180;
         unk->unk8 = 0;
-        unk->unkA = D_801518E4[arg0].unk14[0];
+        unk->unkA = g_BattleModels[arg0].unk14[0];
         unk->unkC = 0x20;
-        unk->unkE = D_801518E4[arg0].unk14[1];
-        if (D_801518E4[arg0].D_80151909 & 4) {
+        unk->unkE = g_BattleModels[arg0].unk14[1];
+        if (g_BattleModels[arg0].D_80151909 & 4) {
             continue;
         }
         D_80163C74 = func_800D29D4(unk, g_cDb->unk70, 12, D_80163C74);
@@ -888,7 +890,7 @@ static void func_800BBDF8(void) {
     }
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BBEAC);
+INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", BATTLE_AllocCallbackSlot);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BBF7C);
 
@@ -910,7 +912,7 @@ static void func_800BC2F0(void) {
     }
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BC348);
+INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", BATTLE_RunCallbackPool);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BC440);
 
@@ -1092,7 +1094,7 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C1394);
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C14C0);
 
 static s32 func_800C169C(u8 arg0) {
-    D_801518E4[arg0].D_80151909 |= 8;
+    g_BattleModels[arg0].D_80151909 |= 8;
     if (D_80151200[arg0].D_80151200 & 0x2000) {
         return 10;
     }
@@ -1117,26 +1119,26 @@ static s32 func_800C169C(u8 arg0) {
     if (D_80151200[arg0].D_80151200 & 0x400000) {
         return 7;
     }
-    D_801518E4[arg0].D_80151909 &= ~8;
+    g_BattleModels[arg0].D_80151909 &= ~8;
     return 0;
 }
 
 static void func_800C17A0(s32 arg0, s32 arg1) {
     switch (D_800EA19C[arg1][0]) {
     case 0:
-        D_801518E4[arg0].unk14[0] = 0;
+        g_BattleModels[arg0].unk14[0] = 0;
         break;
     case 1:
-        D_801518E4[arg0].unk14[0] = 0x800;
+        g_BattleModels[arg0].unk14[0] = 0x800;
         break;
     case 2:
-        D_801518E4[arg0].unk14[0] = 0xC00;
+        g_BattleModels[arg0].unk14[0] = 0xC00;
         break;
     }
-    D_801518E4[arg0].D_8015190C = D_800EA19C[arg1][1];
-    D_801518E4[arg0].D_8015190D = D_800EA19C[arg1][2];
-    D_801518E4[arg0].D_8015190E = D_800EA19C[arg1][3];
-    D_801518E4[arg0].D_80151908 = 0;
+    g_BattleModels[arg0].D_8015190C = D_800EA19C[arg1][1];
+    g_BattleModels[arg0].D_8015190D = D_800EA19C[arg1][2];
+    g_BattleModels[arg0].D_8015190E = D_800EA19C[arg1][3];
+    g_BattleModels[arg0].D_80151908 = 0;
 }
 
 static void func_800C5468(u8 arg0);
@@ -1148,14 +1150,14 @@ static void func_800C1908(u8 arg0) {
     u8 temp_s0;
 
     temp_s0 = arg0;
-    if (D_801518E4[temp_s0].D_80151922 & 0x20) {
+    if (g_BattleModels[temp_s0].D_80151922 & 0x20) {
         if (temp_s0 < 4) {
             D_800F9F28[temp_s0] = D_801636B8[temp_s0].D_801636C0;
         }
         func_800C5170(temp_s0);
         func_800C5468(temp_s0);
         func_800C17A0(temp_s0, func_800C169C(temp_s0));
-        D_801518E4[temp_s0].D_80151922 &= 0xDF;
+        g_BattleModels[temp_s0].D_80151922 &= 0xDF;
     }
     temp_a1 = arg0;
     if (D_80151200[temp_a1].D_80151235 == 0) {
@@ -1177,28 +1179,28 @@ static void func_800C1908(u8 arg0) {
             D_80151200[temp_a1].D_80151233 = 3;
         }
         if (D_80151200[temp_a1].D_80151200 & 0x40) {
-            if (D_801518E4[temp_a1].D_801518E6 == D_80163784[temp_a1]) {
-                D_801518E4[temp_a1].unk160.vy += 0x100;
+            if (g_BattleModels[temp_a1].D_801518E6 == D_80163784[temp_a1]) {
+                g_BattleModels[temp_a1].unk160.vy += 0x100;
             }
         }
         var_a0 = arg0;
         if (D_80151200[var_a0].D_80151200 & 0x400000 &&
-            D_801518E4[var_a0].D_801518E6 == D_80163784[var_a0]) {
-            if (D_801518E4[var_a0].D_801518FC == 0) {
-                D_801518E4[var_a0].unk160.vy = 0x800;
+            g_BattleModels[var_a0].D_801518E6 == D_80163784[var_a0]) {
+            if (g_BattleModels[var_a0].D_801518FC == 0) {
+                g_BattleModels[var_a0].unk160.vy = 0x800;
             } else {
-                D_801518E4[var_a0].unk160.vy = 0;
+                g_BattleModels[var_a0].unk160.vy = 0;
             }
         }
         var_a0 = arg0;
-        if (D_801518E4[var_a0].D_80151909 & 8) {
-            if (D_801518E4[var_a0].D_80151908 < 0x10) {
-                D_801518E4[var_a0].unk14[0] += 0x80;
+        if (g_BattleModels[var_a0].D_80151909 & 8) {
+            if (g_BattleModels[var_a0].D_80151908 < 0x10) {
+                g_BattleModels[var_a0].unk14[0] += 0x80;
             } else {
-                D_801518E4[var_a0].unk14[0] -= 0x80;
+                g_BattleModels[var_a0].unk14[0] -= 0x80;
             }
-            D_801518E4[arg0].D_80151908--;
-            D_801518E4[arg0].D_80151908 &= 0x1F;
+            g_BattleModels[arg0].D_80151908--;
+            g_BattleModels[arg0].D_80151908 &= 0x1F;
         }
     }
 }
@@ -1236,7 +1238,7 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C3068);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C328C);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C33F0);
+INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", BATTLE_DeathFadeTick);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C3578);
 
@@ -1369,7 +1371,7 @@ static void func_800C55B8(void) {
         D_801621F0[D_801590D4].D_801621F0 = -1;
         return;
     }
-    D_801518E4[D_801621F0[D_801590D4].D_801621F6].D_801518EA +=
+    g_BattleModels[D_801621F0[D_801590D4].D_801621F6].D_801518EA +=
         D_801621F0[D_801590D4].D_801621F2;
     D_801621F0[D_801590D4].D_801621F4--;
 }
@@ -1443,7 +1445,7 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C62F4);
 
 void func_800C679C(void);
 
-void func_800C64AC(void) { func_800BBEAC(func_800C679C); }
+void func_800C64AC(void) { BATTLE_AllocCallbackSlot(func_800C679C); }
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C64D4);
 
@@ -1460,8 +1462,8 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C7220);
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C7340);
 
 static void func_800C74A4(void) {
-    if (!(D_801518E4[3].D_80151909 & 2)) {
-        func_800C7C4C(3, D_800F57D0->unk8, D_800F57D0 + 1, D_800F57D0);
+    if (!(g_BattleModels[3].D_80151909 & 2)) {
+        BATTLE_RunAnimScript(3, D_800F57D0->unk8, D_800F57D0 + 1, D_800F57D0);
     }
 }
 

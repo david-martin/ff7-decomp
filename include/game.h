@@ -355,29 +355,29 @@ typedef struct {
     s32 unk100[0x40];
     void* unk200;
     void* unk204;
-    s32 unk208;
+    s32 targetIdx;
     s32 unk20C;
     s32 unk210;
-    s32 unk214;
-    s32 unk218;
+    s32 targetDamage;
+    s32 resultFlags;
     s32 unk21C;
-    s32 unk220;
-    s32 unk224;
-    u32 unk228;
-    s32 unk22C;
+    s32 effectFlags;
+    s32 messageId;
+    u32 statusMask;
+    s32 statusImmuneMask;
     s32 unk230;
     s32 unk234;
-    s32 unk238;
-    s32 unk23C;
-    s32 unk240;
-    s32 unk244;
-    s32 unk248;
-    s32 unk24C;
-    s32 unk250;
+    s32 statusAddMask;
+    s32 statusRemoveMask;
+    s32 statusToggleMask;
+    s32 statusNotifyMask;
+    s32 displayValueA;
+    s32 displayValueB;
+    s32 displayDamage;
     s32 unk254;
     s32 unk258;
     s32 unk25C;
-} Unk800A8D04; // size: ???
+} ActionContext; // size: ???
 
 // seems to be related to a party member during battle
 typedef struct {
@@ -719,7 +719,7 @@ extern Gpu D_80062F24;
 extern u16 D_80062F3C;
 extern s32 D_80062F58;
 extern u_long* D_80062FC4;
-extern Unk800A8D04* D_80063014;
+extern ActionContext* g_CurrentAction;
 extern DRAWENV D_800706A4[2];
 extern u8 g_FieldMusicLock; // MUSIC/FMUSC skip the sound engine while nonzero
                             // (set by the MULCK opcode)

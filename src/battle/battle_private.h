@@ -15,8 +15,10 @@ typedef struct {
 
 typedef struct {
     s16 unk0;
-    s16 unk2;
-    u16 unk4; // ATB fill gauge, saturates/compares at 0xFFFF -- unsigned
+    s16 atbFillRate; // per-tick ATB accumulation step, x4 under a speed flag
+                     // -- inferred from raw-asm reading of
+                     // BATTLE_UpdateATBGauges, not yet decompile-verified
+    u16 atbGauge;    // ATB fill gauge, saturates/compares at 0xFFFF -- unsigned
     s16 unk6;
     s32 unk8;
     s16 unkC;
@@ -35,10 +37,10 @@ typedef struct {
     s32 unk30;
     s32 unk34;
     s32 unk38;
-    u16 unk3C;
-    u16 unk3E;
+    u16 hpSnapshot; // curHP mirrored once/frame by BATTLE_SyncHpMpSnapshot
+    u16 mpSnapshot; // CombatantStats.curMP mirrored the same way
     s32 unk40;
-} Unk800AF470; // 0x44
+} CombatantTurnState; // 0x44
 
 typedef struct {
     s8 unk0;
@@ -72,7 +74,8 @@ typedef struct {
 } Unk801620AC; // size:0x20
 
 typedef struct {
-    /* 0x00 */ s16 D_80162978;
+    /* 0x00 */ s16 state; // -1 = free; BATTLE_RunCallbackPool releases the
+                          // slot by setting this
     /* 0x02 */ s16 D_8016297A;
     /* 0x04 */ s16 D_8016297C;
     /* 0x06 */ s16 D_8016297E;
@@ -191,9 +194,9 @@ typedef struct {
     /* 0x70 */ s32 D_80151270;
 } Unk80151200; // size:0x74
 
-// Confirmed live via PCSX-Redux (exec breakpoint on func_800A4350, one command
-// at a time, plus direct cmdIndex injection for the remaining gaps). "All"-
-// linked materia (Steal-All, Sense-All, etc) reuse their base command's
+// Confirmed live via PCSX-Redux (exec breakpoint on BATTLE_QueueCommand, one
+// command at a time, plus direct cmdIndex injection for the remaining gaps).
+// "All"- linked materia (Steal-All, Sense-All, etc) reuse their base command's
 // cmdIndex -- targetMask changes, not cmdIndex. 0x0E-0x10 and past 0x1B are
 // unused/no-op (injected directly, no visible effect and not reachable via
 // any known menu path). 0x11 forces a melee attack ignoring weapon range
@@ -217,7 +220,7 @@ typedef enum {
     CMD_MELEE_ATTACK = 0x11, // ignores weapon range; not player-menu-reachable?
     CMD_CHANGE = 0x12,
     CMD_DEFEND = 0x13,
-    CMD_LIMIT = 0x14, // priority-5 special case in func_800A4350
+    CMD_LIMIT = 0x14, // priority-5 special case in BATTLE_QueueCommand
     CMD_W_MAGIC = 0x15,
     CMD_W_SUMMON = 0x16,
     CMD_W_ITEM = 0x17,
@@ -231,19 +234,20 @@ typedef enum {
 // Queued-action entry, matches
 // https://wiki.ffrtt.ru/index.php/FF7/Battle/Battle_Mechanics action-queue
 // layout exactly (priority/queue-pos/actorId/cmdIndex/attackIndex/targetMask).
-// D_800F3958 is a 16-entry ring buffer of these (D_800F39D8 read idx,
-// D_800F39DC write idx); the wiki describes up to 64 queued actions, so this
-// may be a smaller staging ring rather than the full logical queue --
-// unconfirmed. Drain chain: func_800A3ED0 drains this ring into a 64-slot
-// priority table (func_800A3D4C), which func_800A23E0 drains in priority
-// order into func_800A1798, which runs the command as a byte-coded sequence
-// of opcodes (D_800F38AC/D_800A0098/D_800E7B28), not a single switch on
+// g_CommandRing is a 16-entry ring buffer of these (g_CommandRingHead read idx,
+// g_CommandRingTail write idx); the wiki describes up to 64 queued actions, so
+// this may be a smaller staging ring rather than the full logical queue --
+// unconfirmed. Drain chain: BATTLE_DrainCommandRing drains this ring into a
+// 64-slot priority table (func_800A3D4C), which BATTLE_DispatchQueuedActions
+// drains in priority order into BATTLE_RunCommandOpcodes, which runs the
+// command as a byte-coded sequence of opcodes
+// (D_800F38AC/D_800A0098/g_CommandOpcodeTable), not a single switch on
 // cmdIndex. Full writeup: ff7-re/reference/BATTLE_COMMAND_QUEUE.md
 typedef struct {
-    /* 0x0 */ u8
-        priority; // 0=limits/counters, 6=player spells (see func_800A4350)
-    /* 0x1 */ u8
-        queuePos; // position within priority band; not set by func_800A4350
+    /* 0x0 */ u8 priority; // 0=limits/counters, 6=player spells (see
+                           // BATTLE_QueueCommand)
+    /* 0x1 */ u8 queuePos; // position within priority band; not set by
+                           // BATTLE_QueueCommand
     /* 0x2 */ u8 actorId;
     /* 0x3 */ s8 cmdIndex; // BattleCommand, stored raw (not the enum type --
                            // keeps this struct's confirmed 0x8-byte layout)
@@ -332,9 +336,9 @@ extern s32 D_800F3948;
 extern s32 D_800F394C;
 extern s32 D_800F3950;
 extern s32 D_800F3954;
-extern QueuedAction D_800F3958[16];
-extern s32 D_800F39D8; // read index into D_800F3958
-extern s32 D_800F39DC; // write index into D_800F3958
+extern QueuedAction g_CommandRing[16];
+extern s32 g_CommandRingHead; // read index into g_CommandRing
+extern s32 g_CommandRingTail; // write index into g_CommandRing
 extern s32 D_800F39E0;
 extern s32 D_800F39E4;
 extern s32 D_800F39EC;
@@ -368,8 +372,9 @@ extern u8 D_800F5774;
 extern s32 D_800F57CC;
 extern Unk800F57D0* D_800F57D0;
 extern u8 D_800F57D4;
-extern Unk800AF470 D_800F5BB8[10]; // per-party-slot turn/effect state (flags,
-                                   // countdown timers)
+extern CombatantTurnState
+    g_CombatantTurnState[10]; // per-party-slot turn/effect state (flags,
+                              // countdown timers)
 extern s8 D_800F7DE4;
 extern u8 D_800F7DF4;
 extern s32 D_800F7DF8[3];
@@ -413,7 +418,7 @@ typedef struct {
     /* 0xC */ s16 unkC;
 } Unk800F9F3C; // size:0xE
 
-extern Unk800F9F3C D_800F9F3C[];
+extern Unk800F9F3C g_MessageTextRing[];
 extern u8 D_800F99E8;
 extern s32 D_800F99E4;
 extern u8 D_800F9D94;
@@ -434,14 +439,15 @@ extern u16 D_800FA9BC;
 extern s16 D_800FA9C4;
 extern s16 D_800FA9C6;
 extern s16 D_800FA9C8;
-// queued-action-ish record, allocated by func_800A2FD0 (unk3 set to -1,
-// marking it unassigned) and searched by func_800A34CC. Traced through
-// func_800ABA68's callers (func_800AB830/func_800ABB0C, still undecompiled):
-// unk0 is very likely an actorId (0-2) -- its source value independently
-// indexes D_800F83E0 with the same 0x68 stride confirmed elsewhere, in both
-// callers. unk1 is a second actor-related value (not always equal to unk0).
-// unk3 becomes a real D_800F9F3C slot index (0-0x7F) once func_800A311C
-// activates the record. unk4's bit 0x4 is checked by func_800A34CC.
+// queued-action-ish record, allocated by BATTLE_AllocActionResultSlot (unk3 set
+// to -1, marking it unassigned) and searched by BATTLE_FindActionResult. Traced
+// through func_800ABA68's callers
+// (BATTLE_ApplyPendingDamage/BATTLE_ResolveHitEffect, still undecompiled): unk0
+// is very likely an actorId (0-2) -- its source value independently indexes
+// D_800F83E0 with the same 0x68 stride confirmed elsewhere, in both callers.
+// unk1 is a second actor-related value (not always equal to unk0). unk3 becomes
+// a real g_MessageTextRing slot index (0-0x7F) once BATTLE_ActivateActionResult
+// activates the record. unk4's bit 0x4 is checked by BATTLE_FindActionResult.
 typedef struct {
     /* 0x0 */ s8 unk0;
     /* 0x1 */ s8 unk1;
@@ -452,7 +458,7 @@ typedef struct {
     /* 0x8 */ u32 unk8;
 } Unk800FA9D0; // size:0xC
 
-extern Unk800FA9D0 D_800FA9D0[0x80];
+extern Unk800FA9D0 g_ActionResultRing[0x80];
 extern s8 D_800FA9E8;
 extern u8 D_800FAFDC;
 extern s16 D_800FAFD4;
@@ -511,7 +517,7 @@ extern u8 D_801620A4;
 extern Unk801620AC D_801620AC[10];
 extern Unk801621F0 D_801621F0[60];
 extern u8 D_80162974;
-extern Unk80162978 D_80162978[100];
+extern Unk80162978 g_BattleCallbackPool[100];
 extern u8 D_801635FC;
 extern u8 D_80163604;
 extern s16 D_80163608;
@@ -546,20 +552,20 @@ extern s8 D_80166F58;
 extern s8 D_80166F64;
 extern u8 D_80166F68;
 
-void func_800A4350(s16, s16, s16, u16);
+void BATTLE_QueueCommand(s16, s16, s16, u16);
 void func_800A8E84(s32);
-void func_800AA950(Unk800FA9D0*);
+void BATTLE_ResolveHitTarget(Unk800FA9D0*);
 void func_800AB308(void);
 void func_800AB480(void);
 void func_800AB788(void);
 void func_800ABA68(Unk800FA9D0*, s16, u16, s16, s16);
-void func_800AC6B4(s32);
+void BATTLE_PickHitMessage(s32);
 void func_800AC73C(s32);
 void func_800ACA24(void);
 s32 func_800ACD88(s32);
 s32 func_800ACE14(s32);
 void func_800AD088(Unk800FA9D0*);
-void func_800AD0FC(void);
+void BATTLE_CommitHpMpChange(void);
 void func_800AD324(s32, s32, s32, s32);
 void func_800AD420(void);
 void func_800AD4EC(void);

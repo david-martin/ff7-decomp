@@ -56,13 +56,14 @@ typedef struct {
     /* 0x20 */ s16 unk20;
     /* 0x22 */ s16 unk22;
     /* 0x24 */ s32 unk24;
-    /* 0x28 */ s16 unk28;
+    /* 0x28 */ s16 curMP; // mirrored into CombatantTurnState.mpSnapshot by
+                          // BATTLE_SyncHpMpSnapshot, paired with curHP below
     /* 0x2A */ s16 unk2A;
     /* 0x2C */ u32 curHP;
     /* 0x30 */ u32 maxHP;
     /* 0x34 */ u32 unk34[4];
     /* 0x44 */ u32 unk44[9];
-} Unk800F83E0; // size:0x68
+} CombatantStats; // size:0x68
 
 typedef struct {
     /* 0x000 */ u16 unk0;
@@ -78,7 +79,7 @@ typedef struct {
     /* 0x026 */ u16 unk26;       // D_800F83D2
     /* 0x028 */ u16 unk28;       // D_800F83D4
     /* 0x02A */ u8 unk2A[0xA];   // D_800F83D8..D_800F83DC
-    /* 0x034 */ Unk800F83E0 combatant[10];
+    /* 0x034 */ CombatantStats combatant[10];
 } BattleState; // size:0x444
 
 typedef struct {
@@ -265,7 +266,7 @@ typedef struct {
 } BattleModelSub; // size:0x34
 
 typedef struct {
-    /* 0x000 */ s16 D_801518E4;
+    /* 0x000 */ s16 unk0;
     /* 0x002 */ s16 D_801518E6;
     /* 0x004 */ s16 D_801518E8;
     /* 0x006 */ s16 D_801518EA;
@@ -393,18 +394,18 @@ extern Unk800F5E60 D_800F5E60[3];
 extern Unk800F5F44 D_800F5F44;
 extern s8 D_800F6936[0x40][8];
 extern u8 D_800F83A8;
-extern BattleState D_800F83AC;
+extern BattleState g_BattleState;
 extern s8 D_800F90B4[][0x240];
 extern Unk800BB75C D_800FA63C;
 extern DB* g_cDb;
 extern short D_8015169C;
-extern BattleModel D_801518E4[10];
+extern BattleModel g_BattleModels[10];
 extern short D_80162080;
 extern Unk8016360C D_8016360C;
 extern u16 D_8016376A;
 
 // battle.c
-int func_800BBEAC(void (*func)(void));
+int BATTLE_AllocCallbackSlot(void (*func)(void));
 
 // battle2.c
 void* func_800D29D4(Unk801B0C98*, u_long**, int, void*);
