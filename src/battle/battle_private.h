@@ -285,6 +285,7 @@ extern s8 D_800E7A58[];
 // checked in order against the 3 landed reel symbols (D_80163774) -- see
 // BATTLE_ResolveCaitSithSlotsResult in battle.c
 extern u8 D_800E7BA4[7][3];
+extern u8 D_800E7BCC[0x1E];
 extern Yamada D_800E8050[];
 extern VECTOR D_800E7D10;
 extern VECTOR D_800E7D20;
@@ -360,6 +361,7 @@ extern s32 D_800F4920;
 extern u16 D_800F4938[];
 extern s8 D_800F494C[];
 extern u16 D_800F4958;
+extern s32 D_800F495C[0x10];
 extern s16 D_800F4AD0;
 extern s32 D_800F4AD4;
 extern s32 D_800F4AD8;
@@ -376,8 +378,8 @@ extern u8 D_800F5774;
 extern s32 D_800F57CC;
 extern Unk800F57D0* D_800F57D0;
 extern u8 D_800F57D4;
-extern Unk800AF470 D_800F5BB8[10]; // per-party-slot turn/effect state (flags,
-                                   // countdown timers)
+extern Unk800AF470 g_CombatantTurnState[10]; // per-party-slot turn/effect state
+                                             // (flags, countdown timers)
 extern s8 D_800F7DE4;
 extern u8 D_800F7DF4;
 extern s32 D_800F7DF8[3];
@@ -400,6 +402,7 @@ extern u8* D_800F8390[3];
 extern s32* D_800F839C; // CD offset?
 extern u8 D_800F83A4[]; // shared battle-script variable bank (func_800B13B0)
 extern u8 D_800F83A6;
+extern s32 D_800F83E0[];
 extern Unk800F83E4 D_800F83E4[];
 extern s32 D_800F8408;
 extern u8 D_800F87F0[]; // per-combatant battle-script variable bank, 0x80 B

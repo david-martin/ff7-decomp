@@ -393,7 +393,7 @@ extern Unk800F5E60 D_800F5E60[3];
 extern Unk800F5F44 D_800F5F44;
 extern s8 D_800F6936[0x40][8];
 extern u8 D_800F83A8;
-extern BattleState D_800F83AC;
+extern BattleState g_BattleState;
 extern s8 D_800F90B4[][0x240];
 extern Unk800BB75C D_800FA63C;
 extern DB* g_cDb;
