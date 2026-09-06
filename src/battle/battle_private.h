@@ -432,7 +432,26 @@ extern s32 D_801516CC[10];
 extern s32 D_8015174C[10];
 extern s32 D_8015178C[10];
 extern s32 D_801517C8[10];
+// per-category stream read/write cursor; see func_800BFA98/func_800BFB10/func_800BB684.
+// unk2/unk4 confirmed as real fields (not padding) by still-INCLUDE_ASM func_800BEA38
+// (write side) / func_800BCB1C (read side), which index D_801518AE/D_8015184E and
+// D_801518B0/D_80151850 with the same base register + index as .pos; unk4 is also
+// read/written via a category*0xE stride in func_800C0970/func_800C0B20. Both symbols
+// are independently named in config/sym_export_battle.us.txt and sym_ovl_export.us.txt.
+typedef struct {
+    /* 0x0 */ u16 pos;
+    /* 0x2 */ u16 unk2; // decremented; gates repeat-count logic in func_800BEA38/func_800BCB1C
+    /* 0x4 */ u8 unk4;  // boolean-looking flag; set/cleared in func_800BEA38, tested in func_800C0970/func_800C0B20
+                        // tail 3 u16s (unk5[1]/[3]/[5]) alias D_801518A4[i+1]/D_801518A6[i+1]/D_801518A8[i+1]
+                        // for this D_801518AC[i]; see the Unk801518A4 comment in battle1.c.
+    /* 0x5 */ u8 unk5[0x9];
+} Unk8015184C; // size:0xE
+
+// Confirmed 4 elements: func_800BB684 hardcodes indices 0-3, and both arrays
+// pack flush (zero gap) against their neighboring symbols in 538AC.bss.s.
+extern Unk8015184C D_8015184C[4]; // read cursor per category
 extern s32 D_8015187C[10];
+extern Unk8015184C D_801518AC[4]; // write cursor per category
 // queued-action-ish record, allocated by func_800A2FD0 (unk3 set to -1,
 // marking it unassigned) and searched by func_800A34CC. Traced through
 // func_800ABA68's callers (func_800AB830/func_800ABB0C, still undecompiled):

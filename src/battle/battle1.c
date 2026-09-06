@@ -10,6 +10,7 @@ static void func_800B3D38(void);
 static void func_800B3D88(void);
 static void func_800B3DBC(void);
 static s32 func_800B3FAC(s32 arg0);
+static void func_800B45F0(void);
 static void func_800B798C(void);
 static void func_800B7FDC(void);
 static void func_800B8360(s32);
@@ -20,10 +21,12 @@ static void func_800BA24C(void);
 static void func_800BA4C8(void);
 void func_800BA598(s16);
 static void func_800BB030(s16);
+void func_800BB684(void);
 static void func_800BB75C(Unk800BB75C* arg0, MATRIX* m, s16* arg2, s16* arg3);
 static void func_800BB804(void);
 static void func_800BB864(void);
 static void func_800BC2F0(void);
+static void func_800C0088(s16 arg0, s16 arg1, s32 arg2);
 static void func_800C0410(void);
 static void func_800C0900(void);
 static void func_800C20E8(s16 arg0, s16* arg1);
@@ -305,7 +308,50 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B3FFC);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B430C);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B45F0);
+extern u8 D_800E8E88[];
+extern s16 D_800E8F94[];
+extern u8 D_800FA6D0;
+// For each of the 3 party slots whose D_801636B8[i].D_801636BE flag has bit
+// 0 set, adjust the u16 at D_800E8E88[D_800FA6D0*0x12 + i*6] by +-0x204,
+// direction chosen by whether D_800E8F94[D_800FA6D0*3 + i] is zero.
+static void func_800B45F0(void) {
+    s16* flagArray;
+    s16* flagPtr;
+    s16 pos;
+    s32 posOffset;
+    s32 actorOffset;
+    s32 i;
+
+    i = 0;
+    actorOffset = 0;
+    flagArray = D_800E8F94;
+    posOffset = D_800FA6D0 * 0x12;
+    flagPtr = flagArray + D_800FA6D0 * 3;
+    for (; i < 3; i++) {
+        // D_800E8E88's volatile casts and this raw D_801636B8 offset stay as
+        // manual pointer math, not a cached typed pointer / named field:
+        // volatile blocks CSE on D_800E8E88, so retail recomputes its base 3x
+        // (once per branch, once for the store); a typed rewrite emits fewer
+        // instructions, shrinking the function and shifting every later
+        // function's address (breaks overlay links via sym_ovl_export). The
+        // D_801636B8[i].D_801636BE field access loses the same base-register
+        // CSE the manual cast gets here. Both confirmed via direct build
+        // failure across multiple independent attempts -- do not retry.
+        if (*(u16*)((u8*)D_801636B8 + 6 + actorOffset) & 1) {
+            if (*flagPtr == 0) {
+                pos = *(volatile u16*)(D_800E8E88 + posOffset);
+                pos = pos + 0x204;
+            } else {
+                pos = *(volatile u16*)(D_800E8E88 + posOffset);
+                pos = pos - 0x204;
+            }
+            *(volatile s16*)(D_800E8E88 + posOffset) = pos;
+        }
+        posOffset += 6;
+        flagPtr += 1;
+        actorOffset += sizeof(Unk801636B8);
+    }
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B46B4);
 
@@ -760,7 +806,36 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BB538);
 
 void func_800BB67C(s32 arg0, Unk800BB67C* arg1) { arg1->unk30 = arg0; }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BB684);
+// No-op while nothing is queued (command == -4). Otherwise resets the four
+// per-category read/write cursors in D_8015184C/D_801518AC (see
+// func_800BFA98/func_800BFB10) to 0xFF, clears the per-slot pause flag,
+// wipes the active-effects table via func_800BC2F0, and re-derives
+// D_800F837C's frame-parity phase from D_801516F4 unless it's already 3.
+void func_800BB684(void) {
+    s16 command = D_80163798[D_801590E0].unk8;
+    u8 category;
+
+    if (command == -4) {
+        return;
+    }
+    D_800F8370 = command;
+    D_801590DC = 0;
+    D_801518AC[3].pos = 0xFF;
+    D_801518AC[2].pos = 0xFF;
+    D_801518AC[1].pos = 0xFF;
+    D_801518AC[0].pos = 0xFF;
+    D_8015184C[3].pos = 0xFF;
+    D_8015184C[2].pos = 0xFF;
+    D_8015184C[1].pos = 0xFF;
+    D_8015184C[0].pos = 0xFF;
+    func_800BC2F0();
+    if (D_800F837C != 3) {
+        category = D_801516F4 & 3;
+        if (category != 3) {
+            D_800F837C = category;
+        }
+    }
+}
 
 static void func_800BB75C(Unk800BB75C* arg0, MATRIX* m, s16* arg2, s16* arg3) {
     int flag;
@@ -948,32 +1023,31 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BE86C);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BEA38);
 
-extern u8 D_8015184C[];
-extern u8 D_801518AC[];
-
 // Read the next u16 from arg0's byte stream via this category's read cursor.
 s16 func_800BFA98(u8* arg0, s32 arg1) {
-    s32 off = (arg1 & 0xFF) * 14;
-    u16 pos = *(u16*)(D_8015184C + off);
+    s32 category = arg1 & 0xFF;
+    u16 pos = D_8015184C[category].pos;
     u32 lo;
     u8 hi;
 
-    *(u16*)(D_8015184C + off) = pos + 1;
+    D_8015184C[category].pos = pos + 1;
     lo = arg0[pos];
-    *(u16*)(D_8015184C + off) = pos + 2;
+    D_8015184C[category].pos = pos + 2;
     hi = arg0[(u16)(pos + 1)];
     return (hi << 8) + lo;
 }
 
+// Same as func_800BFA98, but via this category's write cursor (D_801518AC)
+// instead of the read cursor.
 s16 func_800BFB10(u8* arg0, s32 arg1) {
-    s32 off = (arg1 & 0xFF) * 14;
-    u16 pos = *(u16*)(D_801518AC + off);
+    s32 category = arg1 & 0xFF;
+    u16 pos = D_801518AC[category].pos;
     u32 lo;
     u8 hi;
 
-    *(u16*)(D_801518AC + off) = pos + 1;
+    D_801518AC[category].pos = pos + 1;
     lo = arg0[pos];
-    *(u16*)(D_801518AC + off) = pos + 2;
+    D_801518AC[category].pos = pos + 2;
     hi = arg0[(u16)(pos + 1)];
     return (hi << 8) + lo;
 }
@@ -984,7 +1058,51 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BFDA0);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BFF88);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800C0088);
+// D_801518A4/A6/A8 stay 3 separate 14-byte-stride tables, not one x/y/z
+// struct: func_800C0088.s materializes an independent lui/addiu per table
+// with no shared base register, so a unified struct fails the struct-field
+// CSE-loss trap (2+ fields of one element never share a base). Their real
+// addresses are only 2 bytes apart though (0x801518A4/A6/A8) -- for slot
+// N>=1 this aliases D_801518AC[N-1]'s unk5 tail (+6/+8/+10). Confirmed live
+// via still-INCLUDE_ASM func_800BCA58/func_800BE49C, which read the same
+// 4-category range (0-3) through this and the mirrored D_80151844/46/48
+// read-side table.
+typedef struct {
+    /* 0x0 */ u16 val;
+    /* 0x2 */ u8 unk2[0xC];
+} Unk801518A4; // size:0xE
+
+extern Unk801518A4 D_801518A4[];
+extern Unk801518A4 D_801518A6[];
+extern Unk801518A4 D_801518A8[];
+void BattleEntityGetCenter(s16, s16*);
+s32 func_800C0314(s32, s32);
+// Sample sp[3], nudging the scratchpad's Y total via func_800C0314 like
+// func_800C0254 does; then, unlike func_800C018C/func_800C0254, store
+// sp[] + the current scratchpad totals into slot arg2 of the
+// D_801518A4/A6/A8 tables (14-byte stride; see the layout note above the
+// typedef -- these alias D_801518AC[slot-1]'s tail for slot >= 1) instead
+// of accumulating into the scratchpad itself.
+static void func_800C0088(s16 arg0, s16 arg1, s32 arg2) {
+    u8 partId;
+    s32 slotIndex;
+    s16 sp[3];
+    s32 slot;
+    s16 entityId = arg0;
+
+    slotIndex = arg2;
+    if (entityId == 0xF) {
+        BattleEntityGetCenter(D_80151774, sp);
+    } else {
+        BattleGetPartPosition(entityId, arg1, sp);
+        partId = entityId;
+        *(s32*)0x1F800004 = func_800C0314(*(s32*)0x1F800004, partId);
+    }
+    slot = (s16)slotIndex;
+    D_801518A4[slot].val = sp[0] + *(u16*)0x1F800000;
+    D_801518A6[slot].val = sp[1] + *(u16*)0x1F800004;
+    D_801518A8[slot].val = sp[2] + *(u16*)0x1F800008;
+}
 
 void BattleEntityGetCenter(s16, s16*);
 void func_800C0DD8(s16, s32, s32);
