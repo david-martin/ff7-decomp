@@ -1368,7 +1368,26 @@ void func_800D6814(s32 arg0) {
     func_800D6734(arg0, 2);
 }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D6840);
+extern ModelRenderDesc D_800F1698;
+
+static void func_800D6840(MATRIX* m) {
+    SetFarColor(0, 0, 0);
+    SetRotMatrix(m);
+    SetTransMatrix(m);
+    D_800F1698.flags &= ~(MODEL_MIRROR_X | MODEL_MIRROR_Z);
+    D_80163C74 = func_800D29D4(&D_800F1698, g_cDb->unk70, 0xC, D_80163C74);
+    SetRotMatrix(m);
+    D_800F1698.flags |= MODEL_MIRROR_X;
+    D_80163C74 = func_800D29D4(&D_800F1698, g_cDb->unk70, 0xC, D_80163C74);
+    SetRotMatrix(m);
+    D_800F1698.flags |= MODEL_MIRROR_Z;
+    D_80163C74 = func_800D29D4(&D_800F1698, g_cDb->unk70, 0xC, D_80163C74);
+    SetRotMatrix(m);
+    D_800F1698.flags &= ~MODEL_MIRROR_X;
+    D_80163C74 = func_800D29D4(&D_800F1698, g_cDb->unk70, 0xC, D_80163C74);
+    D_800F1698.uvOffset = 0;
+    D_800F1698.clut = 0;
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle2", func_800D6998);
 
