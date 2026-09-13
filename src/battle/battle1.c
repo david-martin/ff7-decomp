@@ -11,6 +11,7 @@ static void BattleEnemyInitBonesAndAnims(void);
 static void BattlePlayersInitBonesAndAnims(void);
 static void func_800B3E2C(void);
 static s32 func_800B3FAC(s32 arg0);
+static void BattlePlayerModifyDefaultPosByFormation(void);
 static void BattleQueue1ClearTargs(void);
 static void BattleUpdateRender(void);
 static void func_800B8360(s32);
@@ -312,7 +313,50 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B3FFC);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800B430C);
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", BattlePlayerModifyDefaultPosByFormation);
+extern u8 D_800E8E88[];
+extern s16 D_800E8F94[];
+extern u8 D_800FA6D0;
+// For each of the 3 party slots whose D_801636B8[i].D_801636BE flag has bit
+// 0 set, adjust the u16 at D_800E8E88[D_800FA6D0*0x12 + i*6] by +-0x204,
+// direction chosen by whether D_800E8F94[D_800FA6D0*3 + i] is zero.
+static void BattlePlayerModifyDefaultPosByFormation(void) {
+    s16* flagArray;
+    s16* flagPtr;
+    s16 pos;
+    s32 posOffset;
+    s32 actorOffset;
+    s32 i;
+
+    i = 0;
+    actorOffset = 0;
+    flagArray = D_800E8F94;
+    posOffset = D_800FA6D0 * 0x12;
+    flagPtr = flagArray + D_800FA6D0 * 3;
+    for (; i < 3; i++) {
+        // D_800E8E88's volatile casts and this raw D_801636B8 offset stay as
+        // manual pointer math, not a cached typed pointer / named field:
+        // volatile blocks CSE on D_800E8E88, so retail recomputes its base 3x
+        // (once per branch, once for the store); a typed rewrite emits fewer
+        // instructions, shrinking the function and shifting every later
+        // function's address (breaks overlay links via sym_ovl_export). The
+        // D_801636B8[i].D_801636BE field access loses the same base-register
+        // CSE the manual cast gets here. Both confirmed via direct build
+        // failure across multiple independent attempts -- do not retry.
+        if (*(u16*)((u8*)D_801636B8 + 6 + actorOffset) & 1) {
+            if (*flagPtr == 0) {
+                pos = *(volatile u16*)(D_800E8E88 + posOffset);
+                pos = pos + 0x204;
+            } else {
+                pos = *(volatile u16*)(D_800E8E88 + posOffset);
+                pos = pos - 0x204;
+            }
+            *(volatile s16*)(D_800E8E88 + posOffset) = pos;
+        }
+        posOffset += 6;
+        flagPtr += 1;
+        actorOffset += sizeof(Unk801636B8);
+    }
+}
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", BattlePlayerSetDefaultRot);
 

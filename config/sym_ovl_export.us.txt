@@ -213,7 +213,6 @@ BattleLoadThirdPlayer = 0x800b3b84;
 BattleLoadPlayerFinish = 0x800b3c50;
 func_800B3FFC = 0x800b3ffc;
 func_800B430C = 0x800b430c;
-BattlePlayerModifyDefaultPosByFormation = 0x800b45f0;
 BattlePlayerSetDefaultRot = 0x800b46b4;
 BattlePlayerModelsUpdateBonesPos = 0x800b4794;
 BattlePlayerInitModelWithSettings = 0x800b4e30;
