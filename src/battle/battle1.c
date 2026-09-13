@@ -21,6 +21,7 @@ static void func_800BA24C(void);
 static void func_800BA4C8(void);
 void func_800BA598(s16);
 static void func_800BB030(s16);
+void BattleQueue1CameraInit(void);
 static void func_800BB75C(Unk800BB75C* arg0, MATRIX* m, s16* arg2, s16* arg3);
 static void func_800BB804(void);
 static void func_800BB864(void);
@@ -767,7 +768,37 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", BattleUnitInitBonesAndMatrixes
 
 void func_800BB67C(s32 arg0, Unk800BB67C* arg1) { arg1->unk30 = arg0; }
 
-INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", BattleQueue1CameraInit);
+// No-op while nothing is queued (command == -4). Otherwise resets the four
+// per-category read/write cursors in D_8015184C/D_801518AC (see
+// func_800BFA98/func_800BFB10) to 0xFF, clears the per-slot pause flag,
+// resets camera callback state via BattleCameraResetCallbacks (matches this
+// function's own name), and re-derives D_800F837C's frame-parity phase from
+// D_801516F4 unless it's already 3.
+void BattleQueue1CameraInit(void) {
+    s16 command = g_BattleActionQueue[D_801590E0].unk8;
+    u8 category;
+
+    if (command == -4) {
+        return;
+    }
+    D_800F8370 = command;
+    D_801590DC = 0;
+    D_801518AC[3].pos = 0xFF;
+    D_801518AC[2].pos = 0xFF;
+    D_801518AC[1].pos = 0xFF;
+    D_801518AC[0].pos = 0xFF;
+    D_8015184C[3].pos = 0xFF;
+    D_8015184C[2].pos = 0xFF;
+    D_8015184C[1].pos = 0xFF;
+    D_8015184C[0].pos = 0xFF;
+    BattleCameraResetCallbacks();
+    if (D_800F837C != 3) {
+        category = D_801516F4 & 3;
+        if (category != 3) {
+            D_800F837C = category;
+        }
+    }
+}
 
 static void func_800BB75C(Unk800BB75C* arg0, MATRIX* m, s16* arg2, s16* arg3) {
     int flag;
@@ -1111,32 +1142,31 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BE86C);
 
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BEA38);
 
-extern u8 D_8015184C[];
-extern u8 D_801518AC[];
-
 // Read the next u16 from arg0's byte stream via this category's read cursor.
 static s16 func_800BFA98(u8* arg0, s32 arg1) {
-    s32 off = (arg1 & 0xFF) * 14;
-    u16 pos = *(u16*)(D_8015184C + off);
+    s32 category = arg1 & 0xFF;
+    u16 pos = D_8015184C[category].pos;
     u32 lo;
     u8 hi;
 
-    *(u16*)(D_8015184C + off) = pos + 1;
+    D_8015184C[category].pos = pos + 1;
     lo = arg0[pos];
-    *(u16*)(D_8015184C + off) = pos + 2;
+    D_8015184C[category].pos = pos + 2;
     hi = arg0[(u16)(pos + 1)];
     return (hi << 8) + lo;
 }
 
+// Same as func_800BFA98, but via this category's write cursor (D_801518AC)
+// instead of the read cursor.
 static s16 func_800BFB10(u8* arg0, s32 arg1) {
-    s32 off = (arg1 & 0xFF) * 14;
-    u16 pos = *(u16*)(D_801518AC + off);
+    s32 category = arg1 & 0xFF;
+    u16 pos = D_801518AC[category].pos;
     u32 lo;
     u8 hi;
 
-    *(u16*)(D_801518AC + off) = pos + 1;
+    D_801518AC[category].pos = pos + 1;
     lo = arg0[pos];
-    *(u16*)(D_801518AC + off) = pos + 2;
+    D_801518AC[category].pos = pos + 2;
     hi = arg0[(u16)(pos + 1)];
     return (hi << 8) + lo;
 }
