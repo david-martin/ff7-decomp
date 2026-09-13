@@ -342,6 +342,8 @@ static void BattlePlayerModifyDefaultPosByFormation(void) {
         // D_801636B8[i].D_801636BE field access loses the same base-register
         // CSE the manual cast gets here. Both confirmed via direct build
         // failure across multiple independent attempts -- do not retry.
+        // flagPtr's own pointer-walk is likewise load-bearing: indexing
+        // D_800E8F94[D_800FA6D0*3+i] instead regresses 38/49 words.
         if (*(u16*)((u8*)D_801636B8 + 6 + actorOffset) & 1) {
             if (*flagPtr == 0) {
                 pos = *(volatile u16*)(D_800E8E88 + posOffset);
