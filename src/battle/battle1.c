@@ -777,14 +777,14 @@ void BattleQueue1CameraInit(void) {
     }
     D_800F8370 = command;
     D_801590DC = 0;
-    D_801518AC[3].pos = 0xFF;
-    D_801518AC[2].pos = 0xFF;
-    D_801518AC[1].pos = 0xFF;
-    D_801518AC[0].pos = 0xFF;
-    D_8015184C[3].pos = 0xFF;
-    D_8015184C[2].pos = 0xFF;
-    D_8015184C[1].pos = 0xFF;
-    D_8015184C[0].pos = 0xFF;
+    g_BattleQueue1CamWriteCursor[3].pos = 0xFF;
+    g_BattleQueue1CamWriteCursor[2].pos = 0xFF;
+    g_BattleQueue1CamWriteCursor[1].pos = 0xFF;
+    g_BattleQueue1CamWriteCursor[0].pos = 0xFF;
+    g_BattleQueue1CamReadCursor[3].pos = 0xFF;
+    g_BattleQueue1CamReadCursor[2].pos = 0xFF;
+    g_BattleQueue1CamReadCursor[1].pos = 0xFF;
+    g_BattleQueue1CamReadCursor[0].pos = 0xFF;
     BattleCameraResetCallbacks();
     if (D_800F837C != 3) {
         category = D_801516F4 & 3;
@@ -1139,28 +1139,28 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", func_800BEA38);
 // Read the next u16 from arg0's byte stream via this category's read cursor.
 static s16 func_800BFA98(u8* arg0, s32 arg1) {
     s32 category = arg1 & 0xFF;
-    u16 pos = D_8015184C[category].pos;
+    u16 pos = g_BattleQueue1CamReadCursor[category].pos;
     u32 lo;
     u8 hi;
 
-    D_8015184C[category].pos = pos + 1;
+    g_BattleQueue1CamReadCursor[category].pos = pos + 1;
     lo = arg0[pos];
-    D_8015184C[category].pos = pos + 2;
+    g_BattleQueue1CamReadCursor[category].pos = pos + 2;
     hi = arg0[(u16)(pos + 1)];
     return (hi << 8) + lo;
 }
 
-// Same as func_800BFA98, but via this category's write cursor (D_801518AC)
+// Same as func_800BFA98, but via this category's write cursor (g_BattleQueue1CamWriteCursor)
 // instead of the read cursor.
 static s16 func_800BFB10(u8* arg0, s32 arg1) {
     s32 category = arg1 & 0xFF;
-    u16 pos = D_801518AC[category].pos;
+    u16 pos = g_BattleQueue1CamWriteCursor[category].pos;
     u32 lo;
     u8 hi;
 
-    D_801518AC[category].pos = pos + 1;
+    g_BattleQueue1CamWriteCursor[category].pos = pos + 1;
     lo = arg0[pos];
-    D_801518AC[category].pos = pos + 2;
+    g_BattleQueue1CamWriteCursor[category].pos = pos + 2;
     hi = arg0[(u16)(pos + 1)];
     return (hi << 8) + lo;
 }

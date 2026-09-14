@@ -423,13 +423,13 @@ typedef struct {
     /* 0x2 */ u16 unk2;
     /* 0x4 */ u8 unk4;
     /* 0x5 */ u8 unk5[0x9];
-} Unk8015184C; // size:0xE
+} BattleQueue1CamCursor; // size:0xE
 
 // Confirmed 4 elements: BattleQueue1CameraInit hardcodes indices 0-3, and both arrays
 // pack flush (zero gap) against their neighboring symbols in 538AC.bss.s.
-extern Unk8015184C D_8015184C[4]; // read cursor per category
+extern BattleQueue1CamCursor g_BattleQueue1CamReadCursor[4]; // read cursor per category
 extern s32 D_8015187C[10];
-extern Unk8015184C D_801518AC[4]; // write cursor per category
+extern BattleQueue1CamCursor g_BattleQueue1CamWriteCursor[4]; // write cursor per category
 // queued-action-ish record, allocated by BattleQueue2GetPtr (unk3 set to -1,
 // marking it unassigned) and searched by func_800A34CC. Traced through
 // func_800ABA68's callers (func_800AB830/BattleMainDmgCalculation, still undecompiled):
