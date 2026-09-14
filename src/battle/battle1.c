@@ -768,12 +768,6 @@ INCLUDE_ASM("asm/us/battle/nonmatchings/battle1", BattleUnitInitBonesAndMatrixes
 
 void func_800BB67C(s32 arg0, Unk800BB67C* arg1) { arg1->unk30 = arg0; }
 
-// No-op while nothing is queued (command == -4). Otherwise resets the four
-// per-category read/write cursors in D_8015184C/D_801518AC (see
-// func_800BFA98/func_800BFB10) to 0xFF, clears the per-slot pause flag,
-// resets camera callback state via BattleCameraResetCallbacks (matches this
-// function's own name), and re-derives D_800F837C's frame-parity phase from
-// D_801516F4 unless it's already 3.
 void BattleQueue1CameraInit(void) {
     s16 command = g_BattleActionQueue[D_801590E0].unk8;
     u8 category;
