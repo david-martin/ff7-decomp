@@ -1173,20 +1173,18 @@ s32 func_800C0314(s32, s32);
 // D_801518A4/A6/A8 tables (14-byte stride; see the layout note above the
 // typedef -- these alias D_801518AC[slot-1]'s tail for slot >= 1) instead
 // of accumulating into the scratchpad itself.
-static void func_800C0088(s16 arg0, s16 arg1, s32 arg2) {
-    u8 partId;
+static void func_800C0088(s16 entityId, s16 arg1, s32 arg2) {
+    // slotIndex/slot: byte-gated -- collapsing to one var regresses 4 bytes.
     s32 slotIndex;
     s16 sp[3];
     s32 slot;
-    s16 entityId = arg0;
 
     slotIndex = arg2;
     if (entityId == 0xF) {
         BattleEntityGetCenter(D_80151774, sp);
     } else {
         BattleGetPartPosition(entityId, arg1, sp);
-        partId = entityId;
-        *(s32*)0x1F800004 = func_800C0314(*(s32*)0x1F800004, partId);
+        *(s32*)0x1F800004 = func_800C0314(*(s32*)0x1F800004, (u8)entityId);
     }
     slot = (s16)slotIndex;
     D_801518A4[slot].val = sp[0] + *(u16*)0x1F800000;
