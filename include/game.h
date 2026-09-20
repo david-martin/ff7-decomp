@@ -472,7 +472,7 @@ typedef struct {
     s32 unk60;
     s32 unk64;
     s32 unk68;
-    s32 unk6C;
+    s32 attackFlags;
     s32 unk70;
     s32 unk74;
     s32 unk78;
@@ -607,6 +607,16 @@ typedef struct {
     /* 0x18 */ u16 elements;
     /* 0x1A */ u16 flags;
 } AttackData; // size: 0x1C
+
+// AttackData.flags bits, copied into g_CurrentAction->attackFlags for the action's duration.
+// Confirmed live: ATTACKFLAG_MAGICAL selects the Barrier (physical) vs MBarrier (magical) damage-halving
+// check and which pool (HP/MP) capHP/capMP applies to; ATTACKFLAG_NO_REFLECT gates whether a Reflect'd
+// target actually bounces the effect back to the caster (confirmed via a real Fire cast redirecting to
+// the caster when the target had Reflect; a physical Attack, which always has this bit set, never did).
+typedef enum {
+    ATTACKFLAG_MAGICAL = 0x4,
+    ATTACKFLAG_NO_REFLECT = 0x200,
+} AttackDataFlags;
 
 // Kernel armor record, one per armor id (g_ArmorTable). Field meanings were
 // verified by dumping the live table and matching each field against

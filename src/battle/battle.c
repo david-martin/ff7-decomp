@@ -1250,7 +1250,7 @@ void BattleLoadActionAttackData(void) {
     g_CurrentAction->unk60 = atk->cameraSingleID;
     g_CurrentAction->unk64 = atk->cameraSingleID;
     g_CurrentAction->unk24 = atk->attackEffectID;
-    g_CurrentAction->unk6C = atk->flags;
+    g_CurrentAction->attackFlags = atk->flags;
     BattleCopyTargTypeDatToTmp(atk->targetFlags);
     SetActionStatusChange(atk->statusChange, atk->statuses);
     func_800A8D88(atk->additionalEffects, atk->effectsModifier);
@@ -1319,7 +1319,7 @@ void BattleActionType18(void) {
 }
 
 void BattleActionType1B(void) {
-    g_CurrentAction->unk6C &= ~0x2000;
+    g_CurrentAction->attackFlags &= ~0x2000;
     g_CurrentAction->unk3C /= 3;
 }
 
@@ -1661,7 +1661,7 @@ static void BattleMainDmgCalculation(s32 arg0, s32 arg1) {
     if (g_CurrentAction->elements & 0x200) {
         g_CurrentAction->damageFlags |= 1;
     }
-    if (!(g_CurrentAction->unk6C & 1)) {
+    if (!(g_CurrentAction->attackFlags & 1)) {
         g_CurrentAction->damageFlags |= 4;
     }
     if (g_BattleState.combatant[arg1].stateFlags & 0x4000) {
@@ -1682,10 +1682,10 @@ static void BattleMainDmgCalculation(s32 arg0, s32 arg1) {
     // Reflect check: bounce the effect back instead of applying it here
     isReflected = 0;
     func_800AB480();
-    if (!(g_CurrentAction->unk6C & 0x200) && !((D_800F4958 >> arg1) & 1)) {
+    if (!(g_CurrentAction->attackFlags & ATTACKFLAG_NO_REFLECT) && !((D_800F4958 >> arg1) & 1)) {
         isReflected = (g_CurrentAction->unk228 >> 18) & 1;
     }
-    if (!(g_CurrentAction->unk6C & 0x100) && !isReflected && !(g_CurrentAction->unk228 & 1) &&
+    if (!(g_CurrentAction->attackFlags & 0x100) && !isReflected && !(g_CurrentAction->unk228 & 1) &&
         !(g_CurrentAction->unk230 & 0xC1)) {
         g_CurrentAction->unk218 |= 1;
     }
@@ -1852,7 +1852,7 @@ static void BattleMainDmgCalculation(s32 arg0, s32 arg1) {
     } else if (g_CurrentAction->unk218 & 0x800000) {
         BattleQueueUnassignedResultDisplay(act);
     }
-    if (!(g_CurrentAction->unk6C & 0x10)) {
+    if (!(g_CurrentAction->attackFlags & 0x10)) {
         BattleApplyDefaultAbsorbEffect();
     }
     if (g_CurrentAction->unk90 & 0x80) {
@@ -1928,7 +1928,7 @@ s32 func_800ACD88(s32 arg0) {
     s32 flags;
 
     result = 0;
-    if (g_CurrentAction->unk6C & 4) {
+    if (g_CurrentAction->attackFlags & ATTACKFLAG_MAGICAL) {
         flags = g_BattleState.combatant[arg0].stateFlags & 0x200;
         result = flags != 0;
     } else if (g_BattleState.combatant[arg0].stateFlags & 0x100) {
@@ -2003,7 +2003,7 @@ static void BattleApplyDefaultAbsorbEffect(void) {
         t0 = 1;
     }
 
-    a3 = g_CurrentAction->unk6C;
+    a3 = g_CurrentAction->attackFlags;
     a3 = a3 & 0x20;
     a3 = (a3 == 0) ? 3 : 0;
     result = t0 | a3;
@@ -2038,7 +2038,7 @@ const s8 D_800A04B0[] = {0x0A, 0x0B, 0x0C, 0x0D, 0x1E, 0x1F, 0x20, 0x21, 0x22, 0
 INCLUDE_ASM("asm/us/battle/nonmatchings/battle", BattleSetFormulaAndBaseDmg);
 
 static s32 BattleAddBarriersModifier(s32 arg0) {
-    if (g_CurrentAction->unk6C & 4) {
+    if (g_CurrentAction->attackFlags & ATTACKFLAG_MAGICAL) {
         if (g_CurrentAction->unk228 & 0x20000) {
             g_CurrentAction->unk218 |= 0x8000;
         }
@@ -2118,7 +2118,7 @@ void BattleSetTmpDmgAsPhysical(void) {
     s32 mulTerm;
     s32 isBackRow;
 
-    if (!(g_CurrentAction->unk6C & 0x2000)) {
+    if (!(g_CurrentAction->attackFlags & 0x2000)) {
         g_CurrentAction->damageFlags |= 2;
     }
     stat = g_CurrentAction->attackStat;
